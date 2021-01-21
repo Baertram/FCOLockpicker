@@ -1,4 +1,4 @@
-﻿--[[ Umlauts & special characters list
+--[[ Umlauts & special characters list
 	ä --> \195\164
 	Ä --> \195\132
 	ö --> \195\182

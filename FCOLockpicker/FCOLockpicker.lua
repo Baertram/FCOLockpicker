@@ -7,7 +7,6 @@ Show number of lockpicks left at chests in different colors, depending on the lo
 ------------------------------------------------------------------
 -- Create the filter object for addon libFilters
 local LAM = LibAddonMenu2
-if LAM == nil and LibStub then LAM = LibStub('LibAddonMenu-2.0') end
 
 --Global addon variable
 FCOLP = {}
@@ -41,9 +40,11 @@ FCOLP.addonVars.addonNameMenu				= "FCO Lockpicker"
 FCOLP.addonVars.addonNameMenuDisplay		= "|c00FF00FCO |cFFFF00Lockpicker|r"
 FCOLP.addonVars.addonAuthor 				= '|cFFFF00Baertram|r'
 FCOLP.addonVars.addonVersion		   		= 0.01 -- Changing this will reset SavedVariables!
-FCOLP.addonVars.addonVersionOptions 		= '0.1' -- version shown in the settings panel
+FCOLP.addonVars.addonVersionOptions 		= '0.2' -- version shown in the settings panel
 FCOLP.addonVars.addonSavedVariablesName		= "FCOLockpicker_Settings"
 FCOLP.addonVars.gAddonLoaded				= false
+local addonVars = FCOLP.addonVars
+local addonName = addonVars.gAddonName
 
 --Control names of ZO* standard controls etc.
 FCOLP.zosVars 					= {}
@@ -83,12 +84,13 @@ end
 local function FCOLockpicker_getLockpickInfoTextColor()
 	local lockpicksLeft = GetNumLockpicksLeft()
 	local newColor
-    if lockpicksLeft <= FCOLP.settingsVars.settings.warnings.low.valueMin then
-		newColor = FCOLP.settingsVars.settings.warnings.low.color
-    elseif lockpicksLeft <= FCOLP.settingsVars.settings.warnings.medium.valueMin then
-		newColor = FCOLP.settingsVars.settings.warnings.medium.color
+	local settings = FCOLP.settingsVars.settings
+    if lockpicksLeft <= settings.warnings.low.valueMin then
+		newColor = settings.warnings.low.color
+    elseif lockpicksLeft <= settings.warnings.medium.valueMin then
+		newColor = settings.warnings.medium.color
     else
-		newColor = FCOLP.settingsVars.settings.warnings.normal.color
+		newColor = settings.warnings.normal.color
     end
     return newColor
 end
@@ -107,7 +109,7 @@ local function FCOLockpicker_updateLockpicksLeftText(lockpickTextCtrl)
 end
 
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
-	FCOLP.locVars.topLevelWindow = CreateTopLevelWindow(FCOLP.addonVars.gAddonName .. "_ChamberResolvedIcon", GuiRoot)
+	FCOLP.locVars.topLevelWindow = CreateTopLevelWindow(addonName .. "_ChamberResolvedIcon", GuiRoot)
 	FCOLP.locVars.topLevelWindow:SetDimensions(240, 240)
 	FCOLP.locVars.topLevelWindow:SetHidden(true)
 	FCOLP.locVars.topLevelWindow:SetAnchor(CENTER, GuiRoot, CENTER)
@@ -115,7 +117,7 @@ local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	FCOLP.locVars.topLevelWindow:SetDrawTier(DT_HIGH)
 	FCOLP.locVars.topLevelWindow:SetDrawLevel(5)--high level to overlay others
 
-	FCOLP.locVars.FCOLockpicker_chamberResolvedIconTexture = WINDOW_MANAGER:CreateControl(FCOLP.addonVars.gAddonName .. "_ChamberResolvedIconTexture", FCOLP.locVars.topLevelWindow, CT_TEXTURE)
+	FCOLP.locVars.FCOLockpicker_chamberResolvedIconTexture = WINDOW_MANAGER:CreateControl(addonName .. "_ChamberResolvedIconTexture", FCOLP.locVars.topLevelWindow, CT_TEXTURE)
 	FCOLP.locVars.FCOLockpicker_chamberResolvedIconTexture:SetAnchorFill()
 	FCOLP.locVars.FCOLockpicker_chamberResolvedIconTexture:SetTexture("/esoui/art/guild/guildheraldry_indexicon_finalize_down.dds")
 	FCOLP.locVars.FCOLockpicker_chamberResolvedIconTexture:SetColor(0, 1, 0, 1)
@@ -127,8 +129,9 @@ local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 end
 
 local function FCOLockpicker_CheckLockpickChamberResolved()
-    local showIcon = FCOLP.settingsVars.settings.showChamberResolvedIcon
-    local useColors = FCOLP.settingsVars.settings.useSpringGreenColor
+	local settings = FCOLP.settingsVars.settings
+    local showIcon = settings.showChamberResolvedIcon
+    local useColors = settings.useSpringGreenColor
     if not showIcon and not useColors then return false end
 
     --local isInGamepadMode = IsInGamepadPreferredMode() and SCENE_MANAGER:IsShowing("lockpick_gamepad")
@@ -164,13 +167,13 @@ local function FCOLockpicker_Lockpick_Chamber_OnMouseDown()
     	FCOLockPicker_CreateLockpickChamberResolvedIcon()
     end
     --Check every 10 milliseconds if the lockpick chamber is resolved
-	EVENT_MANAGER:RegisterForUpdate("FCOLockpicker_LockPickChamberResolvedCheck", 15, FCOLockpicker_CheckLockpickChamberResolved)
+	EVENT_MANAGER:RegisterForUpdate(addonName .. "_LockPickChamberResolvedCheck", 15, FCOLockpicker_CheckLockpickChamberResolved)
 	return false
 end
 
 local function FCOLockpicker_Lockpick_Chamber_OnMouseUp()
 	--Unregister the repeated check
-	EVENT_MANAGER:UnregisterForUpdate("FCOLockpicker_LockPickChamberResolvedCheck")
+	EVENT_MANAGER:UnregisterForUpdate(addonName.."_LockPickChamberResolvedCheck")
 	--Hide the lockpick chamber resolved icon again
 	if FCOLP.settingsVars.settings.showChamberResolvedIcon and FCOLP.locVars.FCOLockpicker_chamberResolvedIcon then
 		FCOLP.locVars.FCOLockpicker_chamberResolvedIcon:SetHidden(true)
@@ -277,10 +280,10 @@ end
 local function BuildAddonMenu()
 	local panelData = {
 		type 				= 'panel',
-		name 				= FCOLP.addonVars.addonNameMenu,
-		displayName 		= FCOLP.addonVars.addonNameMenuDisplay,
-		author 				= FCOLP.addonVars.addonAuthor,
-		version 			= FCOLP.addonVars.addonVersionOptions,
+		name 				= addonVars.addonNameMenu,
+		displayName 		= addonVars.addonNameMenuDisplay,
+		author 				= addonVars.addonAuthor,
+		version 			= addonVars.addonVersionOptions,
 		registerForRefresh 	= true,
 		registerForDefaults = true,
 		slashCommand = "/fcols",
@@ -292,6 +295,7 @@ local function BuildAddonMenu()
 	local LV_Cur = FCOLP.localizationVars.FCOLP_loc
 	local LV_Eng = FCOLP.localizationVars.localizationAll[1]
 	local languageOptions = {}
+	local languageOptionsValues = {}
 	for i=1, FCOLP.numVars.languageCount do
 		local s="options_language_dropdown_selection"..i
 		if LV_Cur==LV_Eng then
@@ -299,6 +303,7 @@ local function BuildAddonMenu()
 		else
 			languageOptions[i] = nvl(LV_Cur[s]) .. " (" .. nvl(LV_Eng[s]) .. ")"
 		end
+		languageOptionsValues[i] = i
 	end
 -- !!! RU Patch Section END
 
@@ -306,171 +311,192 @@ local function BuildAddonMenu()
     	[1] = FCOLP.localizationVars.FCOLP_loc["options_savedVariables_dropdown_selection1"],
         [2] = FCOLP.localizationVars.FCOLP_loc["options_savedVariables_dropdown_selection2"],
     }
+    local savedVariablesOptionsValues = {
+		[1] = 1,
+		[2] = 2,
+	}
 
-	FCOLP.SettingsPanel = LAM:RegisterAddonPanel(FCOLP.addonVars.gAddonName, panelData)
+	local FCOLPlocVarsLoc = FCOLP.localizationVars.FCOLP_loc
+	local settings = FCOLP.settingsVars.settings
+
+	FCOLP.SettingsPanel = LAM:RegisterAddonPanel(addonName, panelData)
 
 	local optionsTable =
     {	-- BEGIN OF OPTIONS TABLE
 
 		{
 			type = 'description',
-			text = FCOLP.localizationVars.FCOLP_loc["options_description"],
+			text = FCOLPlocVarsLoc["options_description"],
 		},
 --==============================================================================
 		{
         	type = 'header',
-        	name = FCOLP.localizationVars.FCOLP_loc["options_header1"],
+        	name = FCOLPlocVarsLoc["options_header1"],
         },
 		{
 			type = 'dropdown',
-			name = FCOLP.localizationVars.FCOLP_loc["options_language"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_language_tooltip"],
+			name = FCOLPlocVarsLoc["options_language"],
+			tooltip = FCOLPlocVarsLoc["options_language_tooltip"],
 			choices = languageOptions,
-            getFunc = function() return languageOptions[FCOLP.settingsVars.defaultSettings.language] end,
+            choicesValues = languageOptionsValues,
+			getFunc = function() return FCOLP.settingsVars.defaultSettings.language end,
             setFunc = function(value)
-                for i,v in pairs(languageOptions) do
+                --[[
+				for i,v in pairs(languageOptions) do
                     if v == value then
                         debugMessage("[Settings language] v: " .. tostring(v) .. ", i: " .. tostring(i), false)
                     	FCOLP.settingsVars.defaultSettings.language = i
                         --Tell the FCOLP.settingsVars.settings that you have manually chosen the language and want to keep it
                         --Read in function Localization() after ReloadUI()
-                        FCOLP.settingsVars.settings.languageChoosen = true
-						--FCOLP.localizationVars.FCOLP_loc			  	 = FCOLP.localizationVars.FCOLP_loc[i]
+                        settings.languageChoosen = true
+						--FCOLPlocVarsLoc			  	 = FCOLPlocVarsLoc[i]
                         ReloadUI()
                     end
                 end
+                ]]
+				FCOLP.settingsVars.defaultSettings.language = value
+				--Tell the FCOLP.settingsVars.settings that you have manually chosen the language and want to keep it
+				--Read in function Localization() after ReloadUI()
+				settings.languageChoosen = true
+				--FCOLPlocVarsLoc			  	 = FCOLPlocVarsLoc[i]
+				ReloadUI()
             end,
-           disabled = function() return FCOLP.settingsVars.settings.alwaysUseClientLanguage end,
-           warning = FCOLP.localizationVars.FCOLP_loc["options_language_description1"],
+           disabled = function() return settings.alwaysUseClientLanguage end,
+           warning = FCOLPlocVarsLoc["options_language_description1"],
            requiresReload = true,
         },
 		{
 			type = "checkbox",
-			name = FCOLP.localizationVars.FCOLP_loc["options_language_use_client"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_language_use_client_tooltip"],
-			getFunc = function() return FCOLP.settingsVars.settings.alwaysUseClientLanguage end,
+			name = FCOLPlocVarsLoc["options_language_use_client"],
+			tooltip = FCOLPlocVarsLoc["options_language_use_client_tooltip"],
+			getFunc = function() return settings.alwaysUseClientLanguage end,
 			setFunc = function(value)
-				FCOLP.settingsVars.settings.alwaysUseClientLanguage = value
+				settings.alwaysUseClientLanguage = value
                       --ReloadUI()
 		            end,
-            default = FCOLP.settingsVars.settings.alwaysUseClientLanguage,
-            warning = FCOLP.localizationVars.FCOLP_loc["options_language_description1"],
+            default = settings.alwaysUseClientLanguage,
+            warning = FCOLPlocVarsLoc["options_language_description1"],
             requiresReload = true,
 		},
 		{
 			type = 'dropdown',
-			name = FCOLP.localizationVars.FCOLP_loc["options_savedvariables"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_savedvariables_tooltip"],
+			name = FCOLPlocVarsLoc["options_savedvariables"],
+			tooltip = FCOLPlocVarsLoc["options_savedvariables_tooltip"],
 			choices = savedVariablesOptions,
-            getFunc = function() return savedVariablesOptions[FCOLP.settingsVars.defaultSettings.saveMode] end,
+			choicesValues = savedVariablesOptionsValues,
+            getFunc = function() return FCOLP.settingsVars.defaultSettings.saveMode end,
             setFunc = function(value)
-                for i,v in pairs(savedVariablesOptions) do
+                --[[
+				for i,v in pairs(savedVariablesOptions) do
                     if v == value then
                         debugMessage("[Settings save mode] v: " .. tostring(v) .. ", i: " .. tostring(i), false)
                         FCOLP.settingsVars.defaultSettings.saveMode = i
                         ReloadUI()
                     end
                 end
+                ]]
+				FCOLP.settingsVars.defaultSettings.saveMode = value
+				ReloadUI()
             end,
-            warning = FCOLP.localizationVars.FCOLP_loc["options_language_description1"],
+            warning = FCOLPlocVarsLoc["options_language_description1"],
 		},
 --==============================================================================
 		{
 			type = "header",
-			name = FCOLP.localizationVars.FCOLP_loc["options_header_color"]
+			name = FCOLPlocVarsLoc["options_header_color"]
 		},
 
 		{
 			type = "colorpicker",
-			name = FCOLP.localizationVars.FCOLP_loc["options_normal_color"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_normal_color_tooltip"],
-			getFunc = function() return FCOLP.settingsVars.settings.warnings.normal.color.r, FCOLP.settingsVars.settings.warnings.normal.color.g, FCOLP.settingsVars.settings.warnings.normal.color.b, FCOLP.settingsVars.settings.warnings.normal.color.a end,
+			name = FCOLPlocVarsLoc["options_normal_color"],
+			tooltip = FCOLPlocVarsLoc["options_normal_color_tooltip"],
+			getFunc = function() return settings.warnings.normal.color.r, settings.warnings.normal.color.g, settings.warnings.normal.color.b, settings.warnings.normal.color.a end,
             setFunc = function(r,g,b,a)
-            	FCOLP.settingsVars.settings.warnings.normal.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
+            	settings.warnings.normal.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
 			end,
             width="full",
-            default = FCOLP.settingsVars.settings.warnings.normal.color,
+            default = settings.warnings.normal.color,
 		},
 		{
 			type = "colorpicker",
-			name = FCOLP.localizationVars.FCOLP_loc["options_medium_color"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_medium_color_tooltip"],
-			getFunc = function() return FCOLP.settingsVars.settings.warnings.medium.color.r, FCOLP.settingsVars.settings.warnings.medium.color.g, FCOLP.settingsVars.settings.warnings.medium.color.b, FCOLP.settingsVars.settings.warnings.medium.color.a end,
+			name = FCOLPlocVarsLoc["options_medium_color"],
+			tooltip = FCOLPlocVarsLoc["options_medium_color_tooltip"],
+			getFunc = function() return settings.warnings.medium.color.r, settings.warnings.medium.color.g, settings.warnings.medium.color.b, settings.warnings.medium.color.a end,
             setFunc = function(r,g,b,a)
-            	FCOLP.settingsVars.settings.warnings.medium.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
+            	settings.warnings.medium.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
 			end,
             width="half",
-            default = FCOLP.settingsVars.settings.warnings.medium.color,
+            default = settings.warnings.medium.color,
 		},
 		{
 			type = "slider",
-			name = FCOLP.localizationVars.FCOLP_loc["options_medium_value"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_medium_value_tooltip"],
+			name = FCOLPlocVarsLoc["options_medium_value"],
+			tooltip = FCOLPlocVarsLoc["options_medium_value_tooltip"],
 			min = 1,
 			max = 999,
             step = 1,
-			getFunc = function() return FCOLP.settingsVars.settings.warnings.medium.valueMin end,
+			getFunc = function() return settings.warnings.medium.valueMin end,
 			setFunc = function(value)
-					FCOLP.settingsVars.settings.warnings.medium.valueMin = value
+					settings.warnings.medium.valueMin = value
  				end,
             width="full",
-			default = FCOLP.settingsVars.settings.warnings.medium.valueMin,
+			default = settings.warnings.medium.valueMin,
 		},
 		{
 			type = "colorpicker",
-			name = FCOLP.localizationVars.FCOLP_loc["options_low_color"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_low_color_tooltip"],
-			getFunc = function() return FCOLP.settingsVars.settings.warnings.low.color.r, FCOLP.settingsVars.settings.warnings.low.color.g, FCOLP.settingsVars.settings.warnings.low.color.b, FCOLP.settingsVars.settings.warnings.low.color.a end,
+			name = FCOLPlocVarsLoc["options_low_color"],
+			tooltip = FCOLPlocVarsLoc["options_low_color_tooltip"],
+			getFunc = function() return settings.warnings.low.color.r, settings.warnings.low.color.g, settings.warnings.low.color.b, settings.warnings.low.color.a end,
             setFunc = function(r,g,b,a)
-            	FCOLP.settingsVars.settings.warnings.low.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
+            	settings.warnings.low.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
 			end,
             width="half",
-            default = FCOLP.settingsVars.settings.warnings.low.color,
+            default = settings.warnings.low.color,
 		},
 		{
 			type = "slider",
-			name = FCOLP.localizationVars.FCOLP_loc["options_low_value"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_low_value_tooltip"],
+			name = FCOLPlocVarsLoc["options_low_value"],
+			tooltip = FCOLPlocVarsLoc["options_low_value_tooltip"],
 			min = 1,
 			max = 999,
             step = 1,
-			getFunc = function() return FCOLP.settingsVars.settings.warnings.low.valueMin end,
+			getFunc = function() return settings.warnings.low.valueMin end,
 			setFunc = function(value)
-					FCOLP.settingsVars.settings.warnings.low.valueMin = value
+					settings.warnings.low.valueMin = value
  				end,
             width="full",
-			default = FCOLP.settingsVars.settings.warnings.low.valueMin,
+			default = settings.warnings.low.valueMin,
 		},
 --==============================================================================
    		{
 			type = "header",
-			name = FCOLP.localizationVars.FCOLP_loc["options_header_chamber_resolved"]
+			name = FCOLPlocVarsLoc["options_header_chamber_resolved"]
 		},
 		{
 			type = "checkbox",
-			name = FCOLP.localizationVars.FCOLP_loc["options_show_chamber_resolved_icon"],
-			tooltip = FCOLP.localizationVars.FCOLP_loc["options_show_chamber_resolved_icon_tooltip"],
-			getFunc = function() return FCOLP.settingsVars.settings.showChamberResolvedIcon end,
+			name = FCOLPlocVarsLoc["options_show_chamber_resolved_icon"],
+			tooltip = FCOLPlocVarsLoc["options_show_chamber_resolved_icon_tooltip"],
+			getFunc = function() return settings.showChamberResolvedIcon end,
             setFunc = function(value)
-            	FCOLP.settingsVars.settings.showChamberResolvedIcon = value
+            	settings.showChamberResolvedIcon = value
 			end,
             width="full",
-            default = FCOLP.settingsVars.settings.showChamberResolvedIcon,
+            default = settings.showChamberResolvedIcon,
 		},
         {
             type = "checkbox",
-            name = FCOLP.localizationVars.FCOLP_loc["options_show_chamber_resolved_green_springs"],
-            tooltip = FCOLP.localizationVars.FCOLP_loc["options_show_chamber_resolved_green_springs_tooltip"],
-            getFunc = function() return FCOLP.settingsVars.settings.useSpringGreenColor end,
+            name = FCOLPlocVarsLoc["options_show_chamber_resolved_green_springs"],
+            tooltip = FCOLPlocVarsLoc["options_show_chamber_resolved_green_springs_tooltip"],
+            getFunc = function() return settings.useSpringGreenColor end,
             setFunc = function(value)
-                FCOLP.settingsVars.settings.useSpringGreenColor = value
+                settings.useSpringGreenColor = value
             end,
             width="full",
-            default = FCOLP.settingsVars.settings.useSpringGreenColor,
+            default = settings.useSpringGreenColor,
         },
 	} -- END OF OPTIONS TABLE
 
-	LAM:RegisterOptionControls(FCOLP.addonVars.gAddonName, optionsTable)
+	LAM:RegisterOptionControls(addonName, optionsTable)
 end
 
 --==============================================================================
@@ -478,9 +504,11 @@ end
 --==============================================================================
 
 --Check for other addons and react on them
+--[[
 local function CheckIfOtherAddonsActive()
 	return false
 end
+]]
 
 --==============================================================================
 --==================== START EVENT CALLBACK FUNCTIONS===========================
@@ -490,12 +518,12 @@ end
 local function FCOLockpicker_OnEndLockpick(...)
     FCOLP.preventerVars.gLockpickActive = false
     debugMessage("Lockpicking ended", false)
-
+	local settings = FCOLP.settingsVars.settings
 	--Hide the lockpick chamber resolved icon again
-	if FCOLP.settingsVars.settings.showChamberResolvedIcon and FCOLP.locVars.FCOLockpicker_chamberResolvedIcon then
+	if settings.showChamberResolvedIcon and FCOLP.locVars.FCOLockpicker_chamberResolvedIcon then
 		FCOLP.locVars.FCOLockpicker_chamberResolvedIcon:SetHidden(true)
     end
-    if FCOLP.settingsVars.settings.useSpringGreenColor then
+    if settings.useSpringGreenColor then
         --Colorize the springs normal again
         local i
         for i = 1, 5 do
@@ -516,9 +544,9 @@ local function FCOLockpicker_OnEndLockpick(...)
 		end
     end
 
-	EVENT_MANAGER:UnregisterForEvent(FCOLP.addonVars.gAddonName, EVENT_LOCKPICK_FAILED)
-	EVENT_MANAGER:UnregisterForEvent(FCOLP.addonVars.gAddonName, EVENT_LOCKPICK_SUCCESS)
-	EVENT_MANAGER:UnregisterForEvent(FCOLP.addonVars.gAddonName, EVENT_LOCKPICK_BROKE)
+	EVENT_MANAGER:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_FAILED", 	EVENT_LOCKPICK_FAILED)
+	EVENT_MANAGER:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_SUCCESS", EVENT_LOCKPICK_SUCCESS)
+	EVENT_MANAGER:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_BROKE", 	EVENT_LOCKPICK_BROKE)
 end
 
 --Event upon lockpick broke
@@ -529,32 +557,51 @@ local function FCOLockpicker_OnLockpickBroke(...)
 	FCOLockpicker_updateLockpicksLeftText(FCOLP.zosVars.LOCKPICKS_LEFT)
 end
 
+local function checkAndRememberChatMinimizedState()
+	FCOLP.preventerVars.gOnLockpickChatStateIsMinimized = CHAT_SYSTEM:IsMinimized() or false
+	--Minimize the chat now if it is not minimized already
+	if not FCOLP.preventerVars.gOnLockpickChatStateIsMinimized then CHAT_SYSTEM:Minimize() end
+end
+
 --Event upon begin of lockpicking
 local function FCOLockpicker_OnBeginLockpick(...)
+	--Gamepad mode
+	--d(">[FCOLP]OnBeginLockPick-Chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()))
 	if not FCOLP.locVars.FCOLockpicker_chamberResolvedIcon and FCOLP.settingsVars.settings.showChamberResolvedIcon then
 		--Create the lockpick chamber resolved icon texture
-    	FCOLockPicker_CreateLockpickChamberResolvedIcon()
-    end
+		FCOLockPicker_CreateLockpickChamberResolvedIcon()
+	end
 
-	--Remember chat minimized state
-	FCOLP.preventerVars.gOnLockpickChatStateIsMinimized = CHAT_SYSTEM:IsMinimized() or false
-    --Minimize the chat now if it is not minimized already
-    if not FCOLP.preventerVars.gOnLockpickChatStateIsMinimized then CHAT_SYSTEM:Minimize() end
+	--Remember chat minimized state, if not in gamepad mode. Will be done below in the lockpick scene state change, as
+	--the gamepad will minimize the chat autoamtically already
+	if not IsInGamepadPreferredMode() then
+		checkAndRememberChatMinimizedState()
+	end
 
-    FCOLP.preventerVars.gLockpickActive = true
-    debugMessage("Lockpicking started", false)
+	FCOLP.preventerVars.gLockpickActive = true
+	debugMessage("Lockpicking started", false)
 
 	FCOLockpicker_updateLockpicksLeftText(FCOLP.zosVars.LOCKPICKS_LEFT)
 
-    EVENT_MANAGER:RegisterForEvent(FCOLP.addonVars.gAddonName, EVENT_LOCKPICK_FAILED, FCOLockpicker_OnEndLockpick)
-	EVENT_MANAGER:RegisterForEvent(FCOLP.addonVars.gAddonName, EVENT_LOCKPICK_SUCCESS, FCOLockpicker_OnEndLockpick)
-	EVENT_MANAGER:RegisterForEvent(FCOLP.addonVars.gAddonName, EVENT_LOCKPICK_BROKE, FCOLockpicker_OnLockpickBroke)
+	EVENT_MANAGER:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_FAILED", 	EVENT_LOCKPICK_FAILED, 	FCOLockpicker_OnEndLockpick)
+	EVENT_MANAGER:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_SUCCESS", 	EVENT_LOCKPICK_SUCCESS, FCOLockpicker_OnEndLockpick)
+	EVENT_MANAGER:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_BROKE", 	EVENT_LOCKPICK_BROKE, 	FCOLockpicker_OnLockpickBroke)
+end
+
+--For gamepad mode only to detect the correct chat state
+local function OnLockpickGamepadSceneStateChange(oldState, newState)
+--d(">[FCOLP]OnLockpickGamepadSceneStateChange-newState: " ..tostring(newState) .. ", chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()))
+	if not IsInGamepadPreferredMode() then return end
+	if newState == SCENE_STATE_SHOWING then
+		checkAndRememberChatMinimizedState()
+	end
 end
 
 -- Fires each time after addons were loaded and player is ready to move (after each zone change too)
+--[[
 local function FCOLockpicker_Player_Activated(...)
 	--Prevent this event to be fired again and again upon each zone change
-	EVENT_MANAGER:UnregisterForEvent(FCOLP.addonVars.gAddonName, EVENT_PLAYER_ACTIVATED)
+	EVENT_MANAGER:UnregisterForEvent(addonName, EVENT_PLAYER_ACTIVATED)
 
     debugMessage("[EVENT] Player activated", true)
 
@@ -564,8 +611,9 @@ local function FCOLockpicker_Player_Activated(...)
     --Minimize the chat window if the lockpicking starts
     --LOCK_PICK_SCENE:AddFragment(MINIMIZE_CHAT_FRAGMENT)
 
-    FCOLP.addonVars.gAddonLoaded = false
+    addonVars.gAddonLoaded = false
 end
+]]
 
 --==============================================================================
 --===== HOOKS BEGIN ============================================================
@@ -576,12 +624,12 @@ local function CreateHooks()
 --======== LOCKPICK ================================================================
     if IsInGamepadPreferredMode() then
         ZO_PreHook(LOCK_PICK, "StartDepressingPin", FCOLockpicker_Lockpick_Chamber_OnMouseDown)
-        ZO_PreHook(LOCK_PICK, "EndDepressingPin", FCOLockpicker_Lockpick_Chamber_OnMouseUp)
+        ZO_PreHook(LOCK_PICK, "EndDepressingPin", 	FCOLockpicker_Lockpick_Chamber_OnMouseUp)
     else
         --PreHook the lockpick on mouse down function -> Lockpicking of a chamber started
-        ZO_PreHook("ZO_Lockpick_OnMouseDown", FCOLockpicker_Lockpick_Chamber_OnMouseDown)
+        ZO_PreHook("ZO_Lockpick_OnMouseDown", 		FCOLockpicker_Lockpick_Chamber_OnMouseDown)
         --PreHook the lockpick on moues up function -> Lockpicking of a chamber stopped or all chambers are resolved
-        ZO_PreHook("ZO_Lockpick_OnMouseUp", FCOLockpicker_Lockpick_Chamber_OnMouseUp)
+        ZO_PreHook("ZO_Lockpick_OnMouseUp", 		FCOLockpicker_Lockpick_Chamber_OnMouseUp)
     end
 end
 
@@ -595,14 +643,14 @@ end
 --Addon loads up
 local function FCOLockpicker_Loaded(eventCode, addOnName)
 	--Is this addon found?
-	if(addOnName ~= FCOLP.addonVars.gAddonName) then
+	if(addOnName ~= addonName) then
         return
     end
 	--Unregister this event again so it isn't fired again after this addon has beend reckognized
-    EVENT_MANAGER:UnregisterForEvent(FCOLP.addonVars.gAddonName, EVENT_ADD_ON_LOADED)
+    EVENT_MANAGER:UnregisterForEvent(addonName .. "_EVENT_ADD_ON_LOADED", EVENT_ADD_ON_LOADED)
 
     debugMessage("[Addon loading begins...]", true)
-	FCOLP.addonVars.gAddonLoaded = false
+	addonVars.gAddonLoaded = false
 
     --The default values for the language and save mode
     FCOLP.settingsVars.firstRunSettings = {
@@ -653,16 +701,14 @@ local function FCOLockpicker_Loaded(eventCode, addOnName)
 --	LOAD USER SETTINGS
 --=============================================================================================================
     --Load the user's FCOLP.settingsVars.settings from SavedVariables file -> Account wide of basic version 999 at first
-	FCOLP.settingsVars.defaultSettings = ZO_SavedVars:NewAccountWide(FCOLP.addonVars.addonSavedVariablesName, 999, "SettingsForAll", FCOLP.settingsVars.firstRunSettings)
+	FCOLP.settingsVars.defaultSettings = ZO_SavedVars:NewAccountWide(addonVars.addonSavedVariablesName, 999, "SettingsForAll", FCOLP.settingsVars.firstRunSettings)
 
 	--Check, by help of basic version 999 FCOLP.settingsVars.settings, if the FCOLP.settingsVars.settings should be loaded for each character or account wide
     --Use the current addon version to read the FCOLP.settingsVars.settings now
 	if (FCOLP.settingsVars.defaultSettings.saveMode == 1) then
-    	FCOLP.settingsVars.settings = ZO_SavedVars:New(FCOLP.addonVars.addonSavedVariablesName, FCOLP.addonVars.addonVersion , "Settings", FCOLP.settingsVars.defaults )
-	elseif (FCOLP.settingsVars.defaultSettings.saveMode == 2) then
-		FCOLP.settingsVars.settings = ZO_SavedVars:NewAccountWide(FCOLP.addonVars.addonSavedVariablesName, FCOLP.addonVars.addonVersion, "Settings", FCOLP.settingsVars.defaults)
+    	FCOLP.settingsVars.settings = ZO_SavedVars:NewCharacterId(addonVars.addonSavedVariablesName, addonVars.addonVersion , "Settings", FCOLP.settingsVars.defaults )
 	else
-		FCOLP.settingsVars.settings = ZO_SavedVars:NewAccountWide(FCOLP.addonVars.addonSavedVariablesName, FCOLP.addonVars.addonVersion, "Settings", FCOLP.settingsVars.defaults)
+		FCOLP.settingsVars.settings = ZO_SavedVars:NewAccountWide(addonVars.addonSavedVariablesName, addonVars.addonVersion, "Settings", FCOLP.settingsVars.defaults)
 	end
 --=============================================================================================================
 
@@ -678,17 +724,20 @@ local function FCOLockpicker_Loaded(eventCode, addOnName)
     -- Register slash commands
     RegisterSlashCommands()
 
+	--Register for the zone change/player ready event
+--	EVENT_MANAGER:RegisterForEvent(addonName, EVENT_PLAYER_ACTIVATED, FCOLockpicker_Player_Activated)
+	--Register the events for lockpicking
+	EVENT_MANAGER:RegisterForEvent(addonName .. "_EVENT_ADD_ON_LOADED", EVENT_BEGIN_LOCKPICK, FCOLockpicker_OnBeginLockpick)
+
+	LOCK_PICK_GAMEPAD_SCENE:RegisterCallback("StateChange", OnLockpickGamepadSceneStateChange)
+
     debugMessage("[Addon loading finished. Have fun!]", true)
-    FCOLP.addonVars.gAddonLoaded = true
+    addonVars.gAddonLoaded = true
 end
 
 -- Register the event "addon loaded" for this addon
 local function FCOLockpicker_Initialized()
-	EVENT_MANAGER:RegisterForEvent(FCOLP.addonVars.gAddonName, EVENT_ADD_ON_LOADED, FCOLockpicker_Loaded)
-	--Register for the zone change/player ready event
-	EVENT_MANAGER:RegisterForEvent(FCOLP.addonVars.gAddonName, EVENT_PLAYER_ACTIVATED, FCOLockpicker_Player_Activated)
-	--Register the events for lockpicking
-	EVENT_MANAGER:RegisterForEvent(FCOLP.addonVars.gAddonName, EVENT_BEGIN_LOCKPICK, FCOLockpicker_OnBeginLockpick)
+	EVENT_MANAGER:RegisterForEvent(addonName .. "_EVENT_ADD_ON_LOADED", EVENT_ADD_ON_LOADED, FCOLockpicker_Loaded)
 end
 
 
