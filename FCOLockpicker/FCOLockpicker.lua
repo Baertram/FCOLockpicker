@@ -40,7 +40,7 @@ FCOLP.addonVars.addonNameMenu				= "FCO Lockpicker"
 FCOLP.addonVars.addonNameMenuDisplay		= "|c00FF00FCO |cFFFF00Lockpicker|r"
 FCOLP.addonVars.addonAuthor 				= '|cFFFF00Baertram|r'
 FCOLP.addonVars.addonVersion		   		= 0.01 -- Changing this will reset SavedVariables!
-FCOLP.addonVars.addonVersionOptions 		= '0.2' -- version shown in the settings panel
+FCOLP.addonVars.addonVersionOptions 		= '0.21' -- version shown in the settings panel
 FCOLP.addonVars.addonSavedVariablesName		= "FCOLockpicker_Settings"
 FCOLP.addonVars.gAddonLoaded				= false
 local addonVars = FCOLP.addonVars
@@ -56,8 +56,14 @@ FCOLP.settingsVars.defaultSettings = {}
 
 FCOLP.preventerVars = {}
 FCOLP.preventerVars.gLocalizationDone = false
-FCOLP.preventerVars.gLockpickActive	= false
-FCOLP.preventerVars.gOnLockpickChatStateIsMinimized = false
+FCOLP.preventerVars.gLockpickActive                  = false
+FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = false
+--[[
+FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = {
+	["kb"] = false,
+	["gp"] = false,
+}
+]]
 
 FCOLP.localizationVars = {}
 FCOLP.localizationVars.FCOLP_loc = {}
@@ -78,6 +84,50 @@ local function debugMessage(msg_text, deep)
 	        d(FCOLP.locVars.preChatTextGreen .. msg_text)
         end
 	end
+end
+
+local function getGamepadOrKeyboardStr(gamePadMode)
+	gamePadMode = gamePadMode or false
+	local gpOrKbStr ={
+		[true]  = "gp",
+		[false] = "kb"
+	}
+	return gpOrKbStr[gamePadMode]
+end
+
+local function checkAndRememberChatMinimizedState(gamePadMode, doNotMinimize)
+	gamePadMode = gamePadMode or IsInGamepadPreferredMode()
+	doNotMinimize = doNotMinimize or false
+--d(string.format("checkAndRememberChatMinimizedState - gamePadMode %s, doNotMinimize %s, gOnLockpickChatStateWasMinimized old: %s", tostring(gamePadMode), tostring(doNotMinimize), tostring(FCOLP.preventerVars.gOnLockpickChatStateWasMinimized)))
+	local gpOrKbStr = getGamepadOrKeyboardStr(gamePadMode)
+	--Get the chat's state (minimized7maximized) before lockpicking
+	local isChatMinimized = CHAT_SYSTEM:IsMinimized()
+	--FCOLP.preventerVars.gOnLockpickChatStateWasMinimized[gpOrKbStr] = isChatMinimized
+	FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = isChatMinimized
+--d(string.format(">gOnLockpickChatStateWasMinimized new: %s", tostring(isChatMinimized)))
+	--Minimize the chat now if it is not minimized already
+	--Gamepadmode will minimize it on it's own already! -> Scene
+	if not doNotMinimize and not gamePadMode and not isChatMinimized then CHAT_SYSTEM:Minimize() end
+end
+
+local function chatStateRestore(gamePadMode)
+	--Maximize or minimize the chat after lockpicking again?
+	gamePadMode = gamePadMode or IsInGamepadPreferredMode()
+	local gpOrKbStr = getGamepadOrKeyboardStr(gamePadMode)
+
+	local isChatMinimized = CHAT_SYSTEM:IsMinimized()
+--d(string.format("chatStateRestore - gamePadMode %s, isChatMinimized %s, stateMinimizedBefore %s", tostring(gamePadMode), tostring(isChatMinimized), tostring(FCOLP.preventerVars.gOnLockpickChatStateWasMinimized)))
+    --if FCOLP.preventerVars.gOnLockpickChatStateWasMinimized[gpOrKbStr] == true then
+	if FCOLP.preventerVars.gOnLockpickChatStateWasMinimized == true then
+		if not isChatMinimized then
+			CHAT_SYSTEM:Minimize()
+		end
+	else
+		if isChatMinimized then
+			CHAT_SYSTEM:Maximize()
+		end
+    end
+	--checkAndRememberChatMinimizedState(gamePadMode)
 end
 
 --Get the current lockpick color by the settings and amounts of lockpicks
@@ -525,24 +575,16 @@ local function FCOLockpicker_OnEndLockpick(...)
     end
     if settings.useSpringGreenColor then
         --Colorize the springs normal again
-        local i
         for i = 1, 5 do
             if LOCK_PICK.springs[i] ~= nil and LOCK_PICK.springs[i].pin ~= nil then
                 LOCK_PICK.springs[i].pin:SetColor(1, 1, 1, 1)
             end
         end
     end
-    --Maximize or minimize the chat after lockpick?
-	local isChatMinimized = CHAT_SYSTEM:IsMinimized()
-    if FCOLP.preventerVars.gOnLockpickChatStateIsMinimized then
-		if not isChatMinimized then
-			CHAT_SYSTEM:Minimize()
-		end
-	else
-		if isChatMinimized then
-			CHAT_SYSTEM:Maximize()
-		end
-    end
+
+	local gamePadMode = IsInGamepadPreferredMode()
+--d(string.format("FCOLockpicker_OnEndLockpick - gamePadMode %s", tostring(gamePadMode)))
+	chatStateRestore(gamePadMode)
 
 	EVENT_MANAGER:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_FAILED", 	EVENT_LOCKPICK_FAILED)
 	EVENT_MANAGER:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_SUCCESS", EVENT_LOCKPICK_SUCCESS)
@@ -557,16 +599,11 @@ local function FCOLockpicker_OnLockpickBroke(...)
 	FCOLockpicker_updateLockpicksLeftText(FCOLP.zosVars.LOCKPICKS_LEFT)
 end
 
-local function checkAndRememberChatMinimizedState()
-	FCOLP.preventerVars.gOnLockpickChatStateIsMinimized = CHAT_SYSTEM:IsMinimized() or false
-	--Minimize the chat now if it is not minimized already
-	if not FCOLP.preventerVars.gOnLockpickChatStateIsMinimized then CHAT_SYSTEM:Minimize() end
-end
-
 --Event upon begin of lockpicking
 local function FCOLockpicker_OnBeginLockpick(...)
 	--Gamepad mode
 	--d(">[FCOLP]OnBeginLockPick-Chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()))
+
 	if not FCOLP.locVars.FCOLockpicker_chamberResolvedIcon and FCOLP.settingsVars.settings.showChamberResolvedIcon then
 		--Create the lockpick chamber resolved icon texture
 		FCOLockPicker_CreateLockpickChamberResolvedIcon()
@@ -574,8 +611,11 @@ local function FCOLockpicker_OnBeginLockpick(...)
 
 	--Remember chat minimized state, if not in gamepad mode. Will be done below in the lockpick scene state change, as
 	--the gamepad will minimize the chat autoamtically already
-	if not IsInGamepadPreferredMode() then
-		checkAndRememberChatMinimizedState()
+	local gamePadMode = IsInGamepadPreferredMode()
+	local isChatMinimized = CHAT_SYSTEM:IsMinimized()
+	--d(string.format("FCOLockpicker_OnBeginLockpick - gamePadMode %s, isChatMinimized %s, stateMinimizedBefore %s", tostring(gamePadMode), tostring(isChatMinimized), tostring(FCOLP.preventerVars.gOnLockpickChatStateWasMinimized)))
+	if not gamePadMode then
+		checkAndRememberChatMinimizedState(gamePadMode)
 	end
 
 	FCOLP.preventerVars.gLockpickActive = true
@@ -590,10 +630,11 @@ end
 
 --For gamepad mode only to detect the correct chat state
 local function OnLockpickGamepadSceneStateChange(oldState, newState)
---d(">[FCOLP]OnLockpickGamepadSceneStateChange-newState: " ..tostring(newState) .. ", chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()))
-	if not IsInGamepadPreferredMode() then return end
-	if newState == SCENE_STATE_SHOWING then
-		checkAndRememberChatMinimizedState()
+	local gamePadMode = IsInGamepadPreferredMode()
+--d(">[FCOLP]OnLockpickGamepadSceneStateChange-newState: " ..tostring(newState) .. ", chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()) ..", gamepadMode: " ..tostring(gamePadMode))
+	if not gamePadMode then return end
+	if newState == SCENE_SHOWING then
+		checkAndRememberChatMinimizedState(gamePadMode)
 	end
 end
 
