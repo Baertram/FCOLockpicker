@@ -94,8 +94,8 @@ local blueText 	= FCOLP.preChatTextBlue
 --Local speed up variables
 local chamberResolvedUniqueName = addonName .. "_LockPickChamberResolvedCheck"
 local FCOLockpicker_chamberResolvedIcon
-local chamberResolvedColor = 		{0, 1, 0, 1}
-local chamberNotResolvedColor = 	{1, 1, 1, 1}
+local chamberPinResolvedColor = 	{r=0, g=1, b=0, a=1} -- green chamber pin color
+local chamberPinNotResolvedColor =	{r=1, g=1, b=1, a=1} -- normal chamber pin color
 
 --===================== FUNCTIONS ==============================================
 
@@ -197,7 +197,7 @@ end
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	FCOLP.topLevelChamberResolvedIcon = CreateTopLevelWindow(addonName .. "_ChamberResolvedIcon", GuiRoot)
 	local tlc = FCOLP.topLevelChamberResolvedIcon
-	tlc:SetDimensions(0, 0)
+	tlc:SetDimensions(240, 240)
 	tlc:SetHidden(true)
 	tlc:SetAnchor(CENTER, GuiRoot, CENTER)
 	tlc:SetDrawLayer(DL_OVERLAY)
@@ -224,29 +224,27 @@ local function FCOLockpicker_CheckLockpickChamberResolved()
 	if not showChamberResolvedIcon and not useColors then return false end
 
 	--local isInGamepadMode = iigpm() and SCENE_MANAGER:IsShowing("lockpick_gamepad")
-	local settingChamberIndex = lockPick.settingChamberIndex
+	local chamberIndex = lockPick.settingChamberIndex
 	local chamberStress = gscs()
-	local chamberSolved = ics(settingChamberIndex)
+	local chamberSolved = ics(chamberIndex)
 	--d("[FCOLP] CheckLockpickChamberResolved - gamepadMode: " .. tostring(isInGamepadMode) .. ", chamberStress: " .. tostring(chamberStress) .. ", chamberSolved: " .. tostring(chamberSolved) .. ", settingChamberIndex: " .. tostring(settingChamberIndex) .. ", closesIndexGamepad: " .. tostring(LOCK_PICK.closestChamberIndexToLockpick))
 
-	local currentSpring = lockPickSprings[settingChamberIndex]
+	local currentSpring = lockPickSprings[chamberIndex]
 	if not currentSpring then return end
 	--Check if the current lockpick chamber is resolved and change color + show "okay" icon
 	local chamberWasResolved = (chamberStress > 0 and not chamberSolved) or false
 
 	--Update the lockpick chamber resolved icon's visibility state
 	if showChamberResolvedIcon == true then
-		local width, height = 0, 0
-		if chamberWasResolved then width = 240 height = 240 end
-		FCOLockpicker_chamberResolvedIcon:SetDimension(width, height)
 		FCOLockpicker_chamberResolvedIcon:SetHidden(not chamberWasResolved)
 	end
 
 	--Update the chamber's spring color
-	if useColors then
+	if useColors == true then
 		local currentSpringPin = currentSpring.pin
 		if not currentSpringPin then return end
-		currentSpringPin:SetColor(chamberWasResolved and unpack(chamberResolvedColor) or unpack(chamberNotResolvedColor))
+		local chamberPinColor = (chamberWasResolved == true and chamberPinResolvedColor) or chamberPinNotResolvedColor
+		currentSpringPin:SetColor(chamberPinColor.r, chamberPinColor.g, chamberPinColor.b, chamberPinColor.a)
 	end
 end
 
@@ -632,16 +630,16 @@ local function FCOLockpicker_OnEndLockpick(...)
 	--Hide the lockpick chamber resolved icon again (independent to the settings)
 	if FCOLockpicker_chamberResolvedIcon ~= nil then
 		FCOLockpicker_chamberResolvedIcon:SetHidden(true)
-		FCOLockpicker_chamberResolvedIcon:SetDimension(0, 0)
+		FCOLockpicker_chamberResolvedIcon:SetDimensions(0, 0)
     end
 
 	--Springs were colored green? Reset them now
-	if settings.useSpringGreenColor then
+	if settings.useSpringGreenColor == true then
         --Colorize the springs normal again
         for i = 1, NUM_LOCKPICK_CHAMBERS, 1 do
 			local lockPickSpringPin = lockPickSprings[i] and lockPickSprings[i].pin
             if lockPickSpringPin ~= nil then
-                lockPickSpringPin:SetColor(unpack(chamberNotResolvedColor))
+                lockPickSpringPin:SetColor(chamberPinNotResolvedColor.r, chamberPinNotResolvedColor.g, chamberPinNotResolvedColor.b, chamberPinNotResolvedColor.a)
             end
         end
     end
