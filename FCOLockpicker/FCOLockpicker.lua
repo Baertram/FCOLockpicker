@@ -40,6 +40,7 @@ local lockPicksLeftCtrl = zosVars.LOCKPICKS_LEFT
 zosVars.LOCKPICK = LOCK_PICK
 local lockPick = zosVars.LOCKPICK
 local lockPickSprings = lockPick.springs
+zosVars.LOCKPICK_GP_SCENE = LOCK_PICK_GAMEPAD_SCENE
 
 
 --Settings
@@ -195,8 +196,8 @@ end
 
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	FCOLP.topLevelChamberResolvedIcon = CreateTopLevelWindow(addonName .. "_ChamberResolvedIcon", GuiRoot)
-	local tlc                           = FCOLP.topLevelChamberResolvedIcon
-	tlc:SetDimensions(240, 240)
+	local tlc = FCOLP.topLevelChamberResolvedIcon
+	tlc:SetDimensions(0, 0)
 	tlc:SetHidden(true)
 	tlc:SetAnchor(CENTER, GuiRoot, CENTER)
 	tlc:SetDrawLayer(DL_OVERLAY)
@@ -234,7 +235,12 @@ local function FCOLockpicker_CheckLockpickChamberResolved()
 	local chamberWasResolved = (chamberStress > 0 and not chamberSolved) or false
 
 	--Update the lockpick chamber resolved icon's visibility state
-	if showChamberResolvedIcon then FCOLockpicker_chamberResolvedIcon:SetHidden(not chamberWasResolved) end
+	if showChamberResolvedIcon == true then
+		local width, height = 0, 0
+		if chamberWasResolved then width = 240 height = 240 end
+		FCOLockpicker_chamberResolvedIcon:SetDimension(width, height)
+		FCOLockpicker_chamberResolvedIcon:SetHidden(not chamberWasResolved)
+	end
 
 	--Update the chamber's spring color
 	if useColors then
@@ -614,31 +620,33 @@ end
 
 --Event upon end of lockpicking
 local function FCOLockpicker_OnEndLockpick(...)
-    FCOLP.preventerVars.gLockpickActive = false
-    debugMessage("Lockpicking ended", false)
-	local settings = FCOLP.settingsVars.settings
-	showChamberResolvedIcon = settings.showChamberResolvedIcon
-
-	--Hide the lockpick chamber resolved icon again
-	if showChamberResolvedIcon and FCOLockpicker_chamberResolvedIcon then
-		FCOLockpicker_chamberResolvedIcon:SetHidden(true)
-    end
-    if settings.useSpringGreenColor then
-        --Colorize the springs normal again
-        for i = 1, 5 do
-            if LOCK_PICK.springs[i] ~= nil and LOCK_PICK.springs[i].pin ~= nil then
-                LOCK_PICK.springs[i].pin:SetColor(1, 1, 1, 1)
-            end
-        end
-    end
-
-	local gamePadMode = iigpm()
---d(string.format("FCOLockpicker_OnEndLockpick - gamePadMode %s", tostring(gamePadMode)))
-	chatStateRestore(gamePadMode)
-
 	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_FAILED", 	EVENT_LOCKPICK_FAILED)
 	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_SUCCESS", 	EVENT_LOCKPICK_SUCCESS)
 	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_BROKE", 		EVENT_LOCKPICK_BROKE)
+
+    FCOLP.preventerVars.gLockpickActive = false
+    debugMessage("Lockpicking ended", false)
+
+	local settings = FCOLP.settingsVars.settings
+	showChamberResolvedIcon = settings.showChamberResolvedIcon
+	--Hide the lockpick chamber resolved icon again (independent to the settings)
+	if FCOLockpicker_chamberResolvedIcon ~= nil then
+		FCOLockpicker_chamberResolvedIcon:SetHidden(true)
+		FCOLockpicker_chamberResolvedIcon:SetDimension(0, 0)
+    end
+
+	--Springs were colored green? Reset them now
+	if settings.useSpringGreenColor then
+        --Colorize the springs normal again
+        for i = 1, NUM_LOCKPICK_CHAMBERS, 1 do
+			local lockPickSpringPin = lockPickSprings[i] and lockPickSprings[i].pin
+            if lockPickSpringPin ~= nil then
+                lockPickSpringPin:SetColor(unpack(chamberNotResolvedColor))
+            end
+        end
+    end
+	--Restore the chat state from before lockpicking
+	chatStateRestore(nil)
 end
 
 --Event upon lockpick broke
@@ -682,8 +690,10 @@ end
 local function OnLockpickGamepadSceneStateChange(oldState, newState)
 --d(">[FCOLP]OnLockpickGamepadSceneStateChange-newState: " ..tostring(newState) .. ", chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()) ..", gamepadMode: " ..tostring(gamePadMode))
 	if newState == SCENE_SHOWING then
+		--TODO begin 1: Is this needed, as we are at a state change of the gamepad lockpick scene
 		local gamePadMode = iigpm()
 		if not gamePadMode then return end
+		--TODO end 1
 		checkAndRememberChatMinimizedState(gamePadMode, nil)
 	end
 end
@@ -720,6 +730,7 @@ local function addHooksBasedOnInputMode(isGamepadMode)
 	if not hooksPerInputModeAdded[isGamepadMode] then
 		if isGamepadMode then
 			--Gamepad mode
+			zosVars.LOCKPICK_GP_SCENE:RegisterCallback("StateChange", OnLockpickGamepadSceneStateChange)
 			ZO_PreHook(lockPick, "StartDepressingPin", 	FCOLockpicker_Lockpick_Chamber_OnMouseDown)
 			ZO_PreHook(lockPick, "EndDepressingPin", 	FCOLockpicker_Lockpick_Chamber_OnMouseUp)
 		else
@@ -834,6 +845,7 @@ local function FCOLockpicker_Loaded(eventCode, addOnNameOfEachAddonLoaded)
     debugMessage("[Addon loading begins...]", true)
 	addonVars.gAddonLoaded = false
 
+	--SavedVariables
     LoadUserSettings()
 
 	-- Set Localization
@@ -852,8 +864,6 @@ local function FCOLockpicker_Loaded(eventCode, addOnNameOfEachAddonLoaded)
 --	EM:RegisterForEvent(addonName, EVENT_PLAYER_ACTIVATED, FCOLockpicker_Player_Activated)
 	--Register the events for lockpicking
 	EM:RegisterForEvent(addonName .. "_EVENT_ADD_ON_LOADED", EVENT_BEGIN_LOCKPICK, FCOLockpicker_OnBeginLockpick)
-
-	LOCK_PICK_GAMEPAD_SCENE:RegisterCallback("StateChange", OnLockpickGamepadSceneStateChange)
 
     debugMessage("[Addon loading finished. Have fun!]", true)
     addonVars.gAddonLoaded = true
