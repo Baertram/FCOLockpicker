@@ -1,67 +1,48 @@
 ------------------------------------------------------------------
 --FCOLockpicker.lua
 --Author: Baertram
---[[
-Show number of lockpicks left at chests in different colors, depending on the lockpicks left
-]]
 ------------------------------------------------------------------
--- Create the filter object for addon libFilters
-local LAM = LibAddonMenu2
 
 --Global addon variable
 FCOLP = {}
 local FCOLP = FCOLP
---Array for all the variables
-FCOLP.locVars = {}
-local locVars = FCOLP.locVars
 
---Number variables
-FCOLP.numVars = {}
---Available languages
-FCOLP.numVars.languageCount = 7 --English, German, French, Spanish, Italian, Japanese, Russian
-FCOLP.langVars = {}
-FCOLP.langVars.languages = {}
---Build the languages array
-for i=1, FCOLP.numVars.languageCount do
-	FCOLP.langVars.languages[i] = true
-end
-
+--Local game global speed up variables
 local EM = EVENT_MANAGER
 
---Uncolored "FCOLP" pre chat text for the chat output
-locVars.preChatText = "FCOLockpicker"
---Green colored "FCOLP" pre text for the chat output
-locVars.preChatTextGreen = "|c22DD22"..locVars.preChatText.."|r "
---Red colored "FCOLP" pre text for the chat output
-locVars.preChatTextRed = "|cDD2222"..locVars.preChatText.."|r "
---Blue colored "FCOLP" pre text for the chat output
-locVars.preChatTextBlue = "|c2222DD"..locVars.preChatText.."|r "
-
 --Addon variables
-FCOLP.addonVars = {}
-FCOLP.addonVars.gAddonName					= "FCOLockpicker"
-FCOLP.addonVars.addonNameMenu				= "FCO Lockpicker"
-FCOLP.addonVars.addonNameMenuDisplay		= "|c00FF00FCO |cFFFF00Lockpicker|r"
-FCOLP.addonVars.addonAuthor 				= '|cFFFF00Baertram|r'
-FCOLP.addonVars.addonVersion		   		= 0.01 -- Changing this will reset SavedVariables!
-FCOLP.addonVars.addonVersionOptions 		= '0.22' -- version shown in the settings panel
-FCOLP.addonVars.addonSavedVariablesName		= "FCOLockpicker_Settings"
-FCOLP.addonVars.gAddonLoaded				= false
-local addonVars = FCOLP.addonVars
-local addonName = addonVars.gAddonName
+FCOLP.addonVars                            = {}
+FCOLP.addonVars.gAddonName                 = "FCOLockpicker"
+FCOLP.addonVars.addonNameMenu              = "FCO Lockpicker"
+FCOLP.addonVars.addonNameMenuDisplay       = "|c00FF00FCO |cFFFF00Lockpicker|r"
+FCOLP.addonVars.addonAuthor                = '|cFFFF00Baertram|r'
+FCOLP.addonVars.addonVersionOptions        = '0.22' -- version shown in the settings panel
+FCOLP.addonVars.addonSavedVariablesName    = "FCOLockpicker_Settings"
+FCOLP.addonVars.addonSavedVariablesVersion = 0.01 -- Changing this will reset SavedVariables!
+FCOLP.addonVars.gAddonLoaded               = false
+local addonVars                            = FCOLP.addonVars
+local addonName                            = addonVars.gAddonName
+
+--Libraries
+-- Create the addon settings menu
+local LAM = LibAddonMenu2
 
 --Control names of ZO* standard controls etc.
-FCOLP.zosVars 					= {}
-FCOLP.zosVars.LOCKPICKS_LEFT = ZO_LockpickPanelInfoBarLockpicksLeft
+FCOLP.zosVars                              = {}
+local zosVars = FCOLP.zosVars
+zosVars.LOCKPICKS_LEFT  = ZO_LockpickPanelInfoBarLockpicksLeft
+local lockPicksLeftCtrl = zosVars.LOCKPICKS_LEFT
 
-FCOLP.settingsVars		= {}
-FCOLP.settingsVars.settings 		 = {}
-FCOLP.settingsVars.defaultSettings = {}
+--Settings
+FCOLP.settingsVars					= {}
+FCOLP.settingsVars.settings 		= {}
+FCOLP.settingsVars.defaultSettings	= {}
 
+--Prevention booleans
 FCOLP.preventerVars = {}
-FCOLP.preventerVars.gLocalizationDone = false
-FCOLP.preventerVars.gLockpickActive                  = false
-FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = false
+FCOLP.preventerVars.gLocalizationDone 					= false
+FCOLP.preventerVars.gLockpickActive                  	= false
+FCOLP.preventerVars.gOnLockpickChatStateWasMinimized 	= false
 --[[
 FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = {
 	["kb"] = false,
@@ -69,10 +50,37 @@ FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = {
 }
 ]]
 
+--Number variables
+FCOLP.numVars = {}
+--Available languages
+FCOLP.numVars.languageCount = 7 --English, German, French, Spanish, Italian, Japanese, Russian
+FCOLP.langVars = {}
+FCOLP.langVars.languages = {}
+local numVars = FCOLP.numVars
+--Build the languages array
+for i=1, numVars.languageCount do
+	FCOLP.langVars.languages[i] = true
+end
+
+--Localization / translation
 FCOLP.localizationVars = {}
 FCOLP.localizationVars.FCOLP_loc = {}
 local fcoLP_loc
 
+--Uncolored "FCOLP" pre chat text for the chat output
+FCOLP.preChatText = "FCOLockpicker"
+local preChatText = FCOLP.preChatText
+--Green colored "FCOLP" pre text for the chat output
+FCOLP.preChatTextGreen = "|c22DD22"..preChatText.."|r "
+--Red colored "FCOLP" pre text for the chat output
+--FCOLP.preChatTextRed                     = "|cDD2222"..preChatText.."|r "
+--Blue colored "FCOLP" pre text for the chat output
+FCOLP.preChatTextBlue                    = "|c2222DD"..preChatText.."|r "
+--local redText 	= FCOLP.preChatTextRed
+local greenText = FCOLP.preChatTextGreen
+local blueText 	= FCOLP.preChatTextBlue
+
+--Local speed up variables
 local chamberResolvedUniqueName = addonName .. "_LockPickChamberResolvedCheck"
 local FCOLockpicker_chamberResolvedIcon
 
@@ -80,16 +88,17 @@ local FCOLockpicker_chamberResolvedIcon
 
 --Output debug message in chat
 local function debugMessage(msg_text, deep)
-	if (deep and not FCOLP.settingsVars.settings.deepDebug) then
+	local settings = FCOLP.settingsVars.settings
+	if deep and not settings.deepDebug then
     	return
     end
-	if (FCOLP.settingsVars.settings.debug == true) then
+	if settings.debug == true then
     	if deep then
         	--Blue colored "FCOLockpicker" at the start of the string
-	        d(locVars.preChatTextBlue .. msg_text)
+	        d(blueText .. msg_text)
         else
         	--Green colored "FCOLockpicker" at the start of the string
-	        d(locVars.preChatTextGreen .. msg_text)
+	        d(greenText .. msg_text)
         end
 	end
 end
@@ -167,8 +176,8 @@ local function FCOLockpicker_updateLockpicksLeftText(lockpickTextCtrl)
 end
 
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
-	locVars.topLevelChamberResolvedIcon = CreateTopLevelWindow(addonName .. "_ChamberResolvedIcon", GuiRoot)
-	local tlc                           = locVars.topLevelChamberResolvedIcon
+	FCOLP.topLevelChamberResolvedIcon = CreateTopLevelWindow(addonName .. "_ChamberResolvedIcon", GuiRoot)
+	local tlc                           = FCOLP.topLevelChamberResolvedIcon
 	tlc:SetDimensions(240, 240)
 	tlc:SetHidden(true)
 	tlc:SetAnchor(CENTER, GuiRoot, CENTER)
@@ -176,8 +185,8 @@ local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	tlc:SetDrawTier(DT_HIGH)
 	tlc:SetDrawLevel(5)--high level to overlay others
 
-	locVars.FCOLockpicker_chamberResolvedIconTexture = WINDOW_MANAGER:CreateControl(addonName .. "_ChamberResolvedIconTexture", tlc, CT_TEXTURE)
-	local chamberResolvedTexture = locVars.FCOLockpicker_chamberResolvedIconTexture
+	FCOLP.FCOLockpicker_chamberResolvedIconTexture = WINDOW_MANAGER:CreateControl(addonName .. "_ChamberResolvedIconTexture", tlc, CT_TEXTURE)
+	local chamberResolvedTexture = FCOLP.FCOLockpicker_chamberResolvedIconTexture
 	chamberResolvedTexture:SetAnchorFill()
 	chamberResolvedTexture:SetTexture("/esoui/art/guild/guildheraldry_indexicon_finalize_down.dds")
 	chamberResolvedTexture:SetColor(0, 1, 0, 1)
@@ -185,8 +194,8 @@ local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	chamberResolvedTexture:SetDrawTier(DT_HIGH)
     chamberResolvedTexture:SetDrawLevel(5) --high level to overlay others
 
-	locVars.FCOLockpicker_chamberResolvedIcon = locVars.topLevelChamberResolvedIcon
-	FCOLockpicker_chamberResolvedIcon = locVars.topLevelChamberResolvedIcon
+	FCOLP.FCOLockpicker_chamberResolvedIcon = FCOLP.topLevelChamberResolvedIcon
+	FCOLockpicker_chamberResolvedIcon = FCOLP.topLevelChamberResolvedIcon
 end
 
 local function FCOLockpicker_CheckLockpickChamberResolved()
@@ -369,7 +378,7 @@ local function BuildAddonMenu()
 	local LV_Eng = FCOLP.localizationVars.localizationAll[1]
 	local languageOptions = {}
 	local languageOptionsValues = {}
-	for i=1, FCOLP.numVars.languageCount do
+	for i=1, numVars.languageCount do
 		local s="options_language_dropdown_selection"..i
 		if LV_Cur==LV_Eng then
 			languageOptions[i] = nvl(LV_Cur[s])
@@ -618,7 +627,7 @@ local function FCOLockpicker_OnLockpickBroke(...)
     FCOLP.preventerVars.gLockpickActive = true
     debugMessage("Lockpick broke", false)
 
-	FCOLockpicker_updateLockpicksLeftText(FCOLP.zosVars.LOCKPICKS_LEFT)
+	FCOLockpicker_updateLockpicksLeftText(lockPicksLeftCtrl)
 end
 
 --Event upon begin of lockpicking
@@ -643,7 +652,7 @@ local function FCOLockpicker_OnBeginLockpick(...)
 	FCOLP.preventerVars.gLockpickActive = true
 	debugMessage("Lockpicking started", false)
 
-	FCOLockpicker_updateLockpicksLeftText(FCOLP.zosVars.LOCKPICKS_LEFT)
+	FCOLockpicker_updateLockpicksLeftText(lockPicksLeftCtrl)
 
 	EM:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_FAILED", 	EVENT_LOCKPICK_FAILED, 	FCOLockpicker_OnEndLockpick)
 	EM:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_SUCCESS", 	EVENT_LOCKPICK_SUCCESS, FCOLockpicker_OnEndLockpick)
@@ -723,19 +732,9 @@ local function RegisterSlashCommands()
 	SLASH_COMMANDS["/fcol"] 		 = command_handler
 end
 
---Addon loads up
-local function FCOLockpicker_Loaded(eventCode, addOnName)
-	--Is this addon found?
-	if(addOnName ~= addonName) then
-        return
-    end
-	--Unregister this event again so it isn't fired again after this addon has beend reckognized
-    EM:UnregisterForEvent(addonName .. "_EVENT_ADD_ON_LOADED", EVENT_ADD_ON_LOADED)
-
-    debugMessage("[Addon loading begins...]", true)
-	addonVars.gAddonLoaded = false
-
-    --The default values for the language and save mode
+--Load the SavedVariables
+local function LoadUserSettings()
+--The default values for the language and save mode
     FCOLP.settingsVars.firstRunSettings = {
         language 	 		    = 1, --Standard: English
         saveMode     		    = 2, --Standard: Account wide FCOLP.settingsVars.settings
@@ -779,21 +778,39 @@ local function FCOLockpicker_Loaded(eventCode, addOnName)
         showChamberResolvedIcon = false,
         useSpringGreenColor = false,
     }
+	local defaults = FCOLP.settingsVars.defaults
+
+	local worldName = GetWorldName()
+	local addonSavedVariablesName = addonVars.addonSavedVariablesName
+	local addonSavedVariablesVersion = addonVars.addonSavedVariablesVersion
 
 --=============================================================================================================
 --	LOAD USER SETTINGS
 --=============================================================================================================
     --Load the user's FCOLP.settingsVars.settings from SavedVariables file -> Account wide of basic version 999 at first
-	FCOLP.settingsVars.defaultSettings = ZO_SavedVars:NewAccountWide(addonVars.addonSavedVariablesName, 999, "SettingsForAll", FCOLP.settingsVars.firstRunSettings)
+	FCOLP.settingsVars.defaultSettings = ZO_SavedVars:NewAccountWide(addonSavedVariablesName, 999, "SettingsForAll", FCOLP.settingsVars.firstRunSettings, worldName)
 
 	--Check, by help of basic version 999 FCOLP.settingsVars.settings, if the FCOLP.settingsVars.settings should be loaded for each character or account wide
     --Use the current addon version to read the FCOLP.settingsVars.settings now
 	if (FCOLP.settingsVars.defaultSettings.saveMode == 1) then
-    	FCOLP.settingsVars.settings = ZO_SavedVars:NewCharacterId(addonVars.addonSavedVariablesName, addonVars.addonVersion , "Settings", FCOLP.settingsVars.defaults )
+    	FCOLP.settingsVars.settings = ZO_SavedVars:NewCharacterId(addonSavedVariablesName, addonSavedVariablesVersion, "Settings", defaults, worldName)
 	else
-		FCOLP.settingsVars.settings = ZO_SavedVars:NewAccountWide(addonVars.addonSavedVariablesName, addonVars.addonVersion, "Settings", FCOLP.settingsVars.defaults)
+		FCOLP.settingsVars.settings = ZO_SavedVars:NewAccountWide(addonSavedVariablesName, addonSavedVariablesVersion, "Settings", defaults, worldName, nil)
 	end
 --=============================================================================================================
+end
+
+--Addon loads up
+local function FCOLockpicker_Loaded(eventCode, addOnNameOfEachAddonLoaded)
+	--Is this addon found?
+	if addOnNameOfEachAddonLoaded ~= addonName then return end
+	--Unregister this event again so it isn't fired again after this addon has beend reckognized
+    EM:UnregisterForEvent(addonName .. "_EVENT_ADD_ON_LOADED", EVENT_ADD_ON_LOADED)
+
+    debugMessage("[Addon loading begins...]", true)
+	addonVars.gAddonLoaded = false
+
+    LoadUserSettings()
 
 	-- Set Localization
     Localization()

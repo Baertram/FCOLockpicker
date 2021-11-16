@@ -3,7 +3,7 @@
 ## Version: 0.22
 ## AddOnVersion: 002020
 ## APIVersion: 101032 101033
-## Description: Show number of lockpicks left at chests in different colors, depending on the lockpicks left
+## Description: Show number of lockpicks left at chests in different colors, and color the lock's chambers to ease resolving
 ## SavedVariables: FCOLockpicker_Settings
 ## DependsOn: LibAddonMenu-2.0>=32
 
