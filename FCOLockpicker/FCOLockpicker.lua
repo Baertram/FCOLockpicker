@@ -46,6 +46,7 @@ local lockPickSprings = lockPick.springs
 FCOLP.settingsVars					= {}
 FCOLP.settingsVars.settings 		= {}
 FCOLP.settingsVars.defaultSettings	= {}
+local showChamberResolvedIcon
 
 --Prevention booleans
 FCOLP.preventerVars = {}
@@ -217,9 +218,9 @@ end
 
 local function FCOLockpicker_CheckLockpickChamberResolved()
 	local settings = FCOLP.settingsVars.settings
-	local showIcon = settings.showChamberResolvedIcon
+	showChamberResolvedIcon = settings.showChamberResolvedIcon
 	local useColors = settings.useSpringGreenColor
-	if not showIcon and not useColors then return false end
+	if not showChamberResolvedIcon and not useColors then return false end
 
 	--local isInGamepadMode = iigpm() and SCENE_MANAGER:IsShowing("lockpick_gamepad")
 	local settingChamberIndex = lockPick.settingChamberIndex
@@ -233,7 +234,7 @@ local function FCOLockpicker_CheckLockpickChamberResolved()
 	local chamberWasResolved = (chamberStress > 0 and not chamberSolved) or false
 
 	--Update the lockpick chamber resolved icon's visibility state
-	if showIcon then FCOLockpicker_chamberResolvedIcon:SetHidden(not chamberWasResolved) end
+	if showChamberResolvedIcon then FCOLockpicker_chamberResolvedIcon:SetHidden(not chamberWasResolved) end
 
 	--Update the chamber's spring color
 	if useColors then
@@ -245,7 +246,7 @@ end
 
 local function FCOLockpicker_Lockpick_Chamber_OnMouseDown()
 	local settings = FCOLP.settingsVars.settings
-	local showChamberResolvedIcon = settings.showChamberResolvedIcon
+	showChamberResolvedIcon = settings.showChamberResolvedIcon
 	if not showChamberResolvedIcon and not settings.useSpringGreenColor then return end
 	if showChamberResolvedIcon and not FCOLockpicker_chamberResolvedIcon then
 		--Create the lockpick chamber resolved icon texture
@@ -260,7 +261,7 @@ local function FCOLockpicker_Lockpick_Chamber_OnMouseUp()
 	--Unregister the repeated check
 	EM:UnregisterForUpdate(chamberResolvedUniqueName)
 	--Hide the lockpick chamber resolved icon again
-	if FCOLP.settingsVars.settings.showChamberResolvedIcon and FCOLockpicker_chamberResolvedIcon then
+	if showChamberResolvedIcon and FCOLockpicker_chamberResolvedIcon then
 		FCOLockpicker_chamberResolvedIcon:SetHidden(true)
     end
 	return false
@@ -349,26 +350,29 @@ local function command_handler(args)
         end
     end
 
-	if(#options == 0 or options[1] == "" or options[1] == "help" or options[1] == "hilfe" or options[1] == "list") then
-       	help()
-    elseif(options[1] == "debug") then
-    	FCOLP.settingsVars.settings.debug = not FCOLP.settingsVars.settings.debug
-        if (FCOLP.settingsVars.settings.debug == true) then
-        	d(fcoLP_loc["chatcommands_debug_on"])
-        else
-        	FCOLP.settingsVars.settings.deepDebug = false
-        	d(fcoLP_loc["chatcommands_debug_off"])
-        end
-    elseif(options[1] == "deepdebug") then
-        FCOLP.settingsVars.settings.deepDebug = not FCOLP.settingsVars.settings.deepDebug
-        if (FCOLP.settingsVars.settings.deepDebug == true) then
-			FCOLP.settingsVars.settings.debug = true
-        	d(fcoLP_loc["chatcommands_deepdebug_on"])
-        else
-			FCOLP.settingsVars.settings.debug = false
-        	d(fcoLP_loc["chatcommands_deepdebug_off"])
-        end
-    end
+	if #options == 0 or options[1] == "" or options[1] == "help" or options[1] == "hilfe" or options[1] == "aide" or options[1] == "list" then
+		help()
+	else
+		local settings = FCOLP.settingsVars.settings
+		if options[1] == "debug" then
+			FCOLP.settingsVars.settings.debug = not FCOLP.settingsVars.settings.debug
+			if settings.debug == true then
+				d(fcoLP_loc["chatcommands_debug_on"])
+			else
+				FCOLP.settingsVars.settings.deepDebug = false
+				d(fcoLP_loc["chatcommands_debug_off"])
+			end
+		elseif options[1] == "deepdebug" then
+			FCOLP.settingsVars.settings.deepDebug = not FCOLP.settingsVars.settings.deepDebug
+			if settings.deepDebug == true then
+				FCOLP.settingsVars.settings.debug = true
+				d(fcoLP_loc["chatcommands_deepdebug_on"])
+			else
+				FCOLP.settingsVars.settings.debug = false
+				d(fcoLP_loc["chatcommands_deepdebug_off"])
+			end
+		end
+	end
 end
 
 -- Build the options menu
@@ -613,8 +617,10 @@ local function FCOLockpicker_OnEndLockpick(...)
     FCOLP.preventerVars.gLockpickActive = false
     debugMessage("Lockpicking ended", false)
 	local settings = FCOLP.settingsVars.settings
+	showChamberResolvedIcon = settings.showChamberResolvedIcon
+
 	--Hide the lockpick chamber resolved icon again
-	if settings.showChamberResolvedIcon and FCOLockpicker_chamberResolvedIcon then
+	if showChamberResolvedIcon and FCOLockpicker_chamberResolvedIcon then
 		FCOLockpicker_chamberResolvedIcon:SetHidden(true)
     end
     if settings.useSpringGreenColor then
@@ -631,8 +637,8 @@ local function FCOLockpicker_OnEndLockpick(...)
 	chatStateRestore(gamePadMode)
 
 	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_FAILED", 	EVENT_LOCKPICK_FAILED)
-	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_SUCCESS", EVENT_LOCKPICK_SUCCESS)
-	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_BROKE", 	EVENT_LOCKPICK_BROKE)
+	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_SUCCESS", 	EVENT_LOCKPICK_SUCCESS)
+	EM:UnregisterForEvent(addonName.. "_EVENT_LOCKPICK_BROKE", 		EVENT_LOCKPICK_BROKE)
 end
 
 --Event upon lockpick broke
@@ -648,7 +654,7 @@ local function FCOLockpicker_OnBeginLockpick(...)
 	--Gamepad mode
 	--d(">[FCOLP]OnBeginLockPick-Chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()))
 
-	if not FCOLockpicker_chamberResolvedIcon and FCOLP.settingsVars.settings.showChamberResolvedIcon then
+	if not FCOLockpicker_chamberResolvedIcon and showChamberResolvedIcon then
 		--Create the lockpick chamber resolved icon texture
 		FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	end
@@ -811,6 +817,7 @@ local function LoadUserSettings()
 		FCOLP.settingsVars.settings = ZO_SavedVars:NewAccountWide(addonSavedVariablesName, addonSavedVariablesVersion, "Settings", defaults, worldName, nil)
 	end
 --=============================================================================================================
+	showChamberResolvedIcon = FCOLP.settingsVars.settings.showChamberResolvedIcon
 end
 
 --Addon loads up
