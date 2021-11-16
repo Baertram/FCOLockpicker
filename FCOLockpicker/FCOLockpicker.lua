@@ -9,6 +9,11 @@ local FCOLP = FCOLP
 
 --Local game global speed up variables
 local EM = EVENT_MANAGER
+local iigpm = IsInGamepadPreferredMode
+local gnll = GetNumLockpicksLeft
+local ics = IsChamberSolved
+local gscs = GetSettingChamberStress
+
 
 --Addon variables
 FCOLP.addonVars                            = {}
@@ -32,6 +37,10 @@ FCOLP.zosVars                              = {}
 local zosVars = FCOLP.zosVars
 zosVars.LOCKPICKS_LEFT  = ZO_LockpickPanelInfoBarLockpicksLeft
 local lockPicksLeftCtrl = zosVars.LOCKPICKS_LEFT
+zosVars.LOCKPICK = LOCK_PICK
+local lockPick = zosVars.LOCKPICK
+local lockPickSprings = lockPick.springs
+
 
 --Settings
 FCOLP.settingsVars					= {}
@@ -83,6 +92,8 @@ local blueText 	= FCOLP.preChatTextBlue
 --Local speed up variables
 local chamberResolvedUniqueName = addonName .. "_LockPickChamberResolvedCheck"
 local FCOLockpicker_chamberResolvedIcon
+local chamberResolvedColor = 		{0, 1, 0, 1}
+local chamberNotResolvedColor = 	{1, 1, 1, 1}
 
 --===================== FUNCTIONS ==============================================
 
@@ -103,6 +114,7 @@ local function debugMessage(msg_text, deep)
 	end
 end
 
+--[[
 local function getGamepadOrKeyboardStr(gamePadMode)
 	gamePadMode = gamePadMode or false
 	local gpOrKbStr ={
@@ -111,17 +123,18 @@ local function getGamepadOrKeyboardStr(gamePadMode)
 	}
 	return gpOrKbStr[gamePadMode]
 end
+]]
 
 local function checkAndRememberChatMinimizedState(gamePadMode, doNotMinimize)
-	gamePadMode = gamePadMode or IsInGamepadPreferredMode()
+	if gamePadMode == nil then gamePadMode = iigpm() end
 	doNotMinimize = doNotMinimize or false
---d(string.format("checkAndRememberChatMinimizedState - gamePadMode %s, doNotMinimize %s, gOnLockpickChatStateWasMinimized old: %s", tostring(gamePadMode), tostring(doNotMinimize), tostring(FCOLP.preventerVars.gOnLockpickChatStateWasMinimized)))
-	local gpOrKbStr = getGamepadOrKeyboardStr(gamePadMode)
+	--d(string.format("checkAndRememberChatMinimizedState - gamePadMode %s, doNotMinimize %s, gOnLockpickChatStateWasMinimized old: %s", tostring(gamePadMode), tostring(doNotMinimize), tostring(FCOLP.preventerVars.gOnLockpickChatStateWasMinimized)))
+	--local gpOrKbStr = getGamepadOrKeyboardStr(gamePadMode)
 	--Get the chat's state (minimized7maximized) before lockpicking
 	local isChatMinimized = CHAT_SYSTEM:IsMinimized()
 	--FCOLP.preventerVars.gOnLockpickChatStateWasMinimized[gpOrKbStr] = isChatMinimized
 	FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = isChatMinimized
---d(string.format(">gOnLockpickChatStateWasMinimized new: %s", tostring(isChatMinimized)))
+	--d(string.format(">gOnLockpickChatStateWasMinimized new: %s", tostring(isChatMinimized)))
 	--Minimize the chat now if it is not minimized already
 	--Gamepadmode will minimize it on it's own already! -> Scene
 	if not doNotMinimize and not gamePadMode and not isChatMinimized then CHAT_SYSTEM:Minimize() end
@@ -129,8 +142,8 @@ end
 
 local function chatStateRestore(gamePadMode)
 	--Maximize or minimize the chat after lockpicking again?
-	gamePadMode = gamePadMode or IsInGamepadPreferredMode()
-	local gpOrKbStr = getGamepadOrKeyboardStr(gamePadMode)
+	if gamePadMode == nil then gamePadMode = iigpm() end
+	--local gpOrKbStr = getGamepadOrKeyboardStr(gamePadMode)
 
 	local isChatMinimized = CHAT_SYSTEM:IsMinimized()
 --d(string.format("chatStateRestore - gamePadMode %s, isChatMinimized %s, stateMinimizedBefore %s", tostring(gamePadMode), tostring(isChatMinimized), tostring(FCOLP.preventerVars.gOnLockpickChatStateWasMinimized)))
@@ -149,15 +162,19 @@ end
 
 --Get the current lockpick color by the settings and amounts of lockpicks
 local function FCOLockpicker_getLockpickInfoTextColor()
-	local lockpicksLeft = GetNumLockpicksLeft()
+	local lockpicksLeft = gnll()
 	local newColor
 	local settings = FCOLP.settingsVars.settings
-    if lockpicksLeft <= settings.warnings.low.valueMin then
-		newColor = settings.warnings.low.color
-    elseif lockpicksLeft <= settings.warnings.medium.valueMin then
-		newColor = settings.warnings.medium.color
+	local warnings = settings.warnings
+	local lowWarn = warnings.low
+	local mediumWarn = warnings.medium
+	local normalWarn = warnings.normal
+    if lockpicksLeft <= lowWarn.valueMin then
+		newColor = lowWarn.color
+    elseif lockpicksLeft <= mediumWarn.valueMin then
+		newColor = mediumWarn.color
     else
-		newColor = settings.warnings.normal.color
+		newColor = normalWarn.color
     end
     return newColor
 end
@@ -172,7 +189,7 @@ local function FCOLockpicker_updateLockpicksLeftText(lockpickTextCtrl)
     end
 
 	local newTextColor = FCOLockpicker_getLockpickInfoTextColor()
-    lockpickTextCtrl:SetColor(newTextColor.r, newTextColor.g, newTextColor.b, newTextColor.a)
+    lockpickTextCtrl:SetColor(unpack(newTextColor))
 end
 
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
@@ -185,7 +202,7 @@ local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	tlc:SetDrawTier(DT_HIGH)
 	tlc:SetDrawLevel(5)--high level to overlay others
 
-	FCOLP.FCOLockpicker_chamberResolvedIconTexture = WINDOW_MANAGER:CreateControl(addonName .. "_ChamberResolvedIconTexture", tlc, CT_TEXTURE)
+	FCOLP.FCOLockpicker_chamberResolvedIconTexture = CreateControl(addonName .. "_ChamberResolvedIconTexture", tlc, CT_TEXTURE)
 	local chamberResolvedTexture = FCOLP.FCOLockpicker_chamberResolvedIconTexture
 	chamberResolvedTexture:SetAnchorFill()
 	chamberResolvedTexture:SetTexture("/esoui/art/guild/guildheraldry_indexicon_finalize_down.dds")
@@ -200,33 +217,29 @@ end
 
 local function FCOLockpicker_CheckLockpickChamberResolved()
 	local settings = FCOLP.settingsVars.settings
-    local showIcon = settings.showChamberResolvedIcon
-    local useColors = settings.useSpringGreenColor
-    if not showIcon and not useColors then return false end
+	local showIcon = settings.showChamberResolvedIcon
+	local useColors = settings.useSpringGreenColor
+	if not showIcon and not useColors then return false end
 
-    --local isInGamepadMode = IsInGamepadPreferredMode() and SCENE_MANAGER:IsShowing("lockpick_gamepad")
-    local pi = LOCK_PICK.settingChamberIndex
-	local chamberStress = GetSettingChamberStress()
-	local chamberSolved = IsChamberSolved(pi)
-    --d("[FCOLP] CheckLockpickChamberResolved - gamepadMode: " .. tostring(isInGamepadMode) .. ", chamberStress: " .. tostring(chamberStress) .. ", chamberSolved: " .. tostring(chamberSolved) .. ", chamberIndex: " .. tostring(pi) .. ", closesIndexGamepad: " .. tostring(LOCK_PICK.closestChamberIndexToLockpick))
+	--local isInGamepadMode = iigpm() and SCENE_MANAGER:IsShowing("lockpick_gamepad")
+	local settingChamberIndex = lockPick.settingChamberIndex
+	local chamberStress = gscs()
+	local chamberSolved = ics(settingChamberIndex)
+	--d("[FCOLP] CheckLockpickChamberResolved - gamepadMode: " .. tostring(isInGamepadMode) .. ", chamberStress: " .. tostring(chamberStress) .. ", chamberSolved: " .. tostring(chamberSolved) .. ", settingChamberIndex: " .. tostring(settingChamberIndex) .. ", closesIndexGamepad: " .. tostring(LOCK_PICK.closestChamberIndexToLockpick))
 
-	--Check if the current lockpick chamber is resolved
-	if chamberStress > 0 and not chamberSolved then
-        --Show the lockpick chamber resolved icon
-        if showIcon then FCOLockpicker_chamberResolvedIcon:SetHidden(false) end
-        if useColors then
-            if LOCK_PICK.springs[pi] ~= nil and LOCK_PICK.springs[pi].pin ~= nil then
-                LOCK_PICK.springs[pi].pin:SetColor(0, 1, 0, 1)
-            end
-        end
-	else
-        --Hide the lockpick chamber resolved icon
-        if showIcon then FCOLockpicker_chamberResolvedIcon:SetHidden(true) end
-        if useColors then
-            if LOCK_PICK.springs[pi] ~= nil and LOCK_PICK.springs[pi].pin ~= nil then
-                LOCK_PICK.springs[pi].pin:SetColor(1, 1, 1, 1)
-            end
-        end
+	local currentSpring = lockPickSprings[settingChamberIndex]
+	if not currentSpring then return end
+	--Check if the current lockpick chamber is resolved and change color + show "okay" icon
+	local chamberWasResolved = (chamberStress > 0 and not chamberSolved) or false
+
+	--Update the lockpick chamber resolved icon's visibility state
+	if showIcon then FCOLockpicker_chamberResolvedIcon:SetHidden(not chamberWasResolved) end
+
+	--Update the chamber's spring color
+	if useColors then
+		local currentSpringPin = currentSpring.pin
+		if not currentSpringPin then return end
+		currentSpringPin:SetColor(chamberWasResolved and unpack(chamberResolvedColor) or unpack(chamberNotResolvedColor))
 	end
 end
 
@@ -613,7 +626,7 @@ local function FCOLockpicker_OnEndLockpick(...)
         end
     end
 
-	local gamePadMode = IsInGamepadPreferredMode()
+	local gamePadMode = iigpm()
 --d(string.format("FCOLockpicker_OnEndLockpick - gamePadMode %s", tostring(gamePadMode)))
 	chatStateRestore(gamePadMode)
 
@@ -642,8 +655,8 @@ local function FCOLockpicker_OnBeginLockpick(...)
 
 	--Remember chat minimized state, if not in gamepad mode. Will be done below in the lockpick scene state change, as
 	--the gamepad will minimize the chat autoamtically already
-	local gamePadMode = IsInGamepadPreferredMode()
-	local isChatMinimized = CHAT_SYSTEM:IsMinimized()
+	local gamePadMode = iigpm()
+	--local isChatMinimized = CHAT_SYSTEM:IsMinimized()
 	--d(string.format("FCOLockpicker_OnBeginLockpick - gamePadMode %s, isChatMinimized %s, stateMinimizedBefore %s", tostring(gamePadMode), tostring(isChatMinimized), tostring(FCOLP.preventerVars.gOnLockpickChatStateWasMinimized)))
 	if not gamePadMode then
 		checkAndRememberChatMinimizedState(gamePadMode)
@@ -661,7 +674,7 @@ end
 
 --For gamepad mode only to detect the correct chat state
 local function OnLockpickGamepadSceneStateChange(oldState, newState)
-	local gamePadMode = IsInGamepadPreferredMode()
+	local gamePadMode = iigpm()
 --d(">[FCOLP]OnLockpickGamepadSceneStateChange-newState: " ..tostring(newState) .. ", chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()) ..", gamepadMode: " ..tostring(gamePadMode))
 	if not gamePadMode then return end
 	if newState == SCENE_SHOWING then
@@ -696,7 +709,7 @@ local hooksPerInputModeAdded = {
 }
 
 local function addHooksBasedOnInputMode(isGamepadMode)
-	if isGamepadMode == nil then isGamepadMode = IsInGamepadPreferredMode() end
+	if isGamepadMode == nil then isGamepadMode = iigpm() end
 	--Hooks for the input mode was not added yet? go on
 	if not hooksPerInputModeAdded[isGamepadMode] then
 		if isGamepadMode then
