@@ -673,18 +673,18 @@ local function FCOLockpicker_OnBeginLockpick(...)
 
 	FCOLockpicker_updateLockpicksLeftText(lockPicksLeftCtrl)
 
-	EM:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_FAILED", 	EVENT_LOCKPICK_FAILED, 	FCOLockpicker_OnEndLockpick)
-	EM:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_SUCCESS", 	EVENT_LOCKPICK_SUCCESS, FCOLockpicker_OnEndLockpick)
+	EM:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_FAILED",	EVENT_LOCKPICK_FAILED, 	FCOLockpicker_OnEndLockpick)
+	EM:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_SUCCESS",	EVENT_LOCKPICK_SUCCESS, FCOLockpicker_OnEndLockpick)
 	EM:RegisterForEvent(addonName .. "_EVENT_LOCKPICK_BROKE", 	EVENT_LOCKPICK_BROKE, 	FCOLockpicker_OnLockpickBroke)
 end
 
 --For gamepad mode only to detect the correct chat state
 local function OnLockpickGamepadSceneStateChange(oldState, newState)
-	local gamePadMode = iigpm()
 --d(">[FCOLP]OnLockpickGamepadSceneStateChange-newState: " ..tostring(newState) .. ", chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()) ..", gamepadMode: " ..tostring(gamePadMode))
-	if not gamePadMode then return end
 	if newState == SCENE_SHOWING then
-		checkAndRememberChatMinimizedState(gamePadMode)
+		local gamePadMode = iigpm()
+		if not gamePadMode then return end
+		checkAndRememberChatMinimizedState(gamePadMode, nil)
 	end
 end
 
@@ -720,14 +720,18 @@ local function addHooksBasedOnInputMode(isGamepadMode)
 	if not hooksPerInputModeAdded[isGamepadMode] then
 		if isGamepadMode then
 			--Gamepad mode
-			ZO_PreHook(LOCK_PICK, "StartDepressingPin", FCOLockpicker_Lockpick_Chamber_OnMouseDown)
-			ZO_PreHook(LOCK_PICK, "EndDepressingPin", 	FCOLockpicker_Lockpick_Chamber_OnMouseUp)
+			ZO_PreHook(lockPick, "StartDepressingPin", 	FCOLockpicker_Lockpick_Chamber_OnMouseDown)
+			ZO_PreHook(lockPick, "EndDepressingPin", 	FCOLockpicker_Lockpick_Chamber_OnMouseUp)
 		else
 			--Keyboard mode
 			ZO_PreHook("ZO_Lockpick_OnMouseDown", 		FCOLockpicker_Lockpick_Chamber_OnMouseDown)
 			ZO_PreHook("ZO_Lockpick_OnMouseUp", 		FCOLockpicker_Lockpick_Chamber_OnMouseUp)
 		end
 		hooksPerInputModeAdded[isGamepadMode] = true
+		--Both hooks were added already cuz both input types were changed already? Unregister the event now
+		if hooksPerInputModeAdded[true] == true and hooksPerInputModeAdded[false] == true then
+			EM:UnregisterForEvent(addonName .. "_EVENT_INPUT_TYPE_CHANGED", EVENT_INPUT_TYPE_CHANGED)
+		end
 	end
 end
 
@@ -739,7 +743,7 @@ end
 local function CreateHooks()
 --======== LOCKPICK hooks for the chamber resolved ================================================================
 	--Initially setup for the currently used input mode
-	addHooksBasedOnInputMode()
+	addHooksBasedOnInputMode(nil)
 	--React on an input mode change keyboard->gamepad->keyboard and register the needed hooks
 	EM:RegisterForEvent(addonName .. "_EVENT_INPUT_TYPE_CHANGED", EVENT_INPUT_TYPE_CHANGED, onEventInputTypeChanged)
 end
