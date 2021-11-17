@@ -21,7 +21,7 @@ FCOLP.addonVars.gAddonName                 = "FCOLockpicker"
 FCOLP.addonVars.addonNameMenu              = "FCO Lockpicker"
 FCOLP.addonVars.addonNameMenuDisplay       = "|c00FF00FCO |cFFFF00Lockpicker|r"
 FCOLP.addonVars.addonAuthor                = '|cFFFF00Baertram|r'
-FCOLP.addonVars.addonVersionOptions        = '0.22' -- version shown in the settings panel
+FCOLP.addonVars.addonVersionOptions        = '0.23' -- version shown in the settings panel
 FCOLP.addonVars.addonSavedVariablesName    = "FCOLockpicker_Settings"
 FCOLP.addonVars.addonSavedVariablesVersion = 0.01 -- Changing this will reset SavedVariables!
 FCOLP.addonVars.gAddonLoaded               = false
@@ -191,7 +191,7 @@ local function FCOLockpicker_updateLockpicksLeftText(lockpickTextCtrl)
     end
 
 	local newTextColor = FCOLockpicker_getLockpickInfoTextColor()
-    lockpickTextCtrl:SetColor(unpack(newTextColor))
+    lockpickTextCtrl:SetColor(newTextColor.r, newTextColor.g, newTextColor.b, newTextColor.a)
 end
 
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
@@ -660,9 +660,13 @@ local function FCOLockpicker_OnBeginLockpick(...)
 	--Gamepad mode
 	--d(">[FCOLP]OnBeginLockPick-Chat minimized: " .. tostring(CHAT_SYSTEM:IsMinimized()))
 
-	if not FCOLockpicker_chamberResolvedIcon and showChamberResolvedIcon then
-		--Create the lockpick chamber resolved icon texture
-		FCOLockPicker_CreateLockpickChamberResolvedIcon()
+	if showChamberResolvedIcon then
+		if not FCOLockpicker_chamberResolvedIcon then
+			--Create the lockpick chamber resolved icon texture
+			FCOLockPicker_CreateLockpickChamberResolvedIcon()
+		else
+			FCOLockpicker_chamberResolvedIcon:SetDimensions(240, 240)
+		end
 	end
 
 	--Remember chat minimized state, if not in gamepad mode. Will be done below in the lockpick scene state change, as
