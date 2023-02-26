@@ -59,6 +59,9 @@ FCOLP.localizationVars.localizationAll = {
         ["options_show_chamber_resolved_icon_tooltip"]	 = "Show an icon if the actual lock's chamber has been resolved",
 		["options_show_chamber_resolved_green_springs"]	= "Show green springs",
 		["options_show_chamber_resolved_green_springs_tooltip"] = "Colorize the srping of the lock green if the chamber is resolved.",
+		["options_header_chamber"]					= "Chamber sound",
+		["options_chamber_stressed_sound"] 			= "\'Chamber stressed\' sound",
+		["options_chamber_stressed_sound_tooltip"] 	= "Choose the sound to play if a chamber is stressed. The default sound is index 2 \'LOCKPICKING_CHAMBER_STRESS\", index 1 means: Play no sound.\n\nChange the slider to play the chosen sound.",
         --Chat commands
         ["chatcommands_info"]					 = "|c00FF00FCO|cFFFF00Lockpicker|cFFFFFF",
         ["chatcommands_help"]					 = "|cFFFFFF'help' / 'list'|cFFFF00: Shows this information about the addon",
@@ -109,6 +112,9 @@ FCOLP.localizationVars.localizationAll = {
         ["options_show_chamber_resolved_icon_tooltip"]	 = "Zeit ein Symbol an, wenn die aktuelle Kammer des Schlosses gelöst wurde",
         ["options_show_chamber_resolved_green_springs"]	= "Färbe Schloss Federn grün",
         ["options_show_chamber_resolved_green_springs_tooltip"] = "Färbe die Federn des Schlosses grün, wenn eine Kammer gelöst wurde.",
+		["options_header_chamber"]					= "Kammer Ton",
+		["options_chamber_stressed_sound"] 			= "\'Kammer überlastet\' Ton",
+		["options_chamber_stressed_sound_tooltip"] 	= "Wähle den Sound aus der abgespielt wird, wenn die Feder der Kammer überlastet ist (wackelt). Der Standard Ton ist 2 \'LOCKPICKING_CHAMBER_STRESS\". Wähle 1 um keinen Ton abszupielen\n\nVerändere den Regler,um den Sound abzuspielen.",
         --Chat commands
         ["chatcommands_info"]					 = "|c00FF00FCO|cFFFF00Lockpicker|cFFFFFF",
         ["chatcommands_help"]					 = "|cFFFFFF'hilfe' / 'liste'|cFFFF00: Zeigt diese Information zum Addon an",

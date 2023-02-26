@@ -8,6 +8,7 @@ FCOLP = {}
 local FCOLP = FCOLP
 
 --Local game global speed up variables
+local CM = CALLBACK_MANAGER
 local EM = EVENT_MANAGER
 local iigpm = IsInGamepadPreferredMode
 local gnll = GetNumLockpicksLeft
@@ -21,7 +22,7 @@ FCOLP.addonVars.gAddonName                 = "FCOLockpicker"
 FCOLP.addonVars.addonNameMenu              = "FCO Lockpicker"
 FCOLP.addonVars.addonNameMenuDisplay       = "|c00FF00FCO |cFFFF00Lockpicker|r"
 FCOLP.addonVars.addonAuthor                = '|cFFFF00Baertram|r'
-FCOLP.addonVars.addonVersionOptions        = '0.23' -- version shown in the settings panel
+FCOLP.addonVars.addonVersionOptions        = '0.26' -- version shown in the settings panel
 FCOLP.addonVars.addonSavedVariablesName    = "FCOLockpicker_Settings"
 FCOLP.addonVars.addonSavedVariablesVersion = 0.01 -- Changing this will reset SavedVariables!
 FCOLP.addonVars.gAddonLoaded               = false
@@ -31,6 +32,25 @@ local addonName                            = addonVars.gAddonName
 --Libraries
 -- Create the addon settings menu
 local LAM = LibAddonMenu2
+
+--Original variables
+local origChamberStressedSound = SOUNDS["LOCKPICKING_CHAMBER_STRESS"]
+FCOLP.sounds = {}
+if SOUNDS then
+    for soundName, _ in pairs(SOUNDS) do
+        if soundName ~= "NONE" and soundName ~= "LOCKPICKING_CHAMBER_STRESS" then
+            table.insert(FCOLP.sounds, soundName)
+        end
+    end
+    if #FCOLP.sounds > 0 then
+        table.sort(FCOLP.sounds)
+        table.insert(FCOLP.sounds, 1, "NONE")
+		table.insert(FCOLP.sounds, 2, "LOCKPICKING_CHAMBER_STRESS")
+    end
+end
+if #FCOLP.sounds <= 0 then
+    d("[FCOLockpicker] No sounds could be found!")
+end
 
 --Control names of ZO* standard controls etc.
 FCOLP.zosVars                              = {}
@@ -192,6 +212,19 @@ local function FCOLockpicker_updateLockpicksLeftText(lockpickTextCtrl)
 
 	local newTextColor = FCOLockpicker_getLockpickInfoTextColor()
     lockpickTextCtrl:SetColor(newTextColor.r, newTextColor.g, newTextColor.b, newTextColor.a)
+
+	--fix for PerfectPixel
+	if PP ~= nil and lockpickTextCtrl ~= nil then
+--d(">PP found!")
+		local parentCtrl = ZO_LockpickPanel --lockpickTextCtrl:GetParent()
+		if parentCtrl ~= nil then
+--d(">>parent found, hidden: " ..tostring(parentCtrl:IsHidden()))
+			--<Anchor point="LEFT" relativeTo="$(parent)LockLevel" relativePoint="RIGHT" offsetX="55" />
+			lockpickTextCtrl:ClearAnchors()
+			lockpickTextCtrl:SetAnchor(TOP, parentCtrl, TOP, 0, 75)
+			lockpickTextCtrl:SetHidden(false)
+		end
+	end
 end
 
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
@@ -379,6 +412,27 @@ local function command_handler(args)
 	end
 end
 
+local function updateLockpickChamberStressedSound(idx, doPlaySound)
+	if idx == nil then return end
+
+	doPlaySound = doPlaySound or false
+	local newLockpickChamberStressedSound
+	if idx > 1 then
+		if idx == 2 then
+			newLockpickChamberStressedSound = origChamberStressedSound
+		else
+			local value = FCOLP.sounds[idx]
+			newLockpickChamberStressedSound = SOUNDS[value]
+		end
+		if doPlaySound == true then PlaySound(newLockpickChamberStressedSound) end
+	else
+		newLockpickChamberStressedSound = SOUNDS["NONE"]
+	end
+	if newLockpickChamberStressedSound ~= nil and newLockpickChamberStressedSound ~= "" then
+		SOUNDS["LOCKPICKING_CHAMBER_STRESS"] = newLockpickChamberStressedSound
+	end
+end
+
 -- Build the options menu
 local function BuildAddonMenu()
 	local panelData = {
@@ -420,8 +474,24 @@ local function BuildAddonMenu()
 	}
 
 	local settings = FCOLP.settingsVars.settings
+	local defaultSettings = FCOLP.settingsVars.defaults
 
 	FCOLP.SettingsPanel = LAM:RegisterAddonPanel(addonName, panelData)
+
+	local function UpdateChamberStressedSoundDescription()
+		--New ultimate sound 1
+		FCOLockpickerChamberHeader.header:SetFont("ZoFontGameSmall")
+		--FCOLockpickerChamberHeader.header:SetText(fcoLP_loc["options_chamber_stressed_sound"] .. ": " .. FCOLP.sounds[settings.chamberStressedSound])
+		FCOLockpickerChamberHeader.data.name = fcoLP_loc["options_chamber_stressed_sound"] .. ": " .. FCOLP.sounds[settings.chamberStressedSound]
+		FCOLockpickerChamberHeader:UpdateValue()
+    end
+
+--LAM 2.0 callback function if the panel was created
+    local FCOLAMPanelCreated
+	FCOLAMPanelCreated = function(panel)
+        if panel ~= FCOLP.SettingsPanel then return end
+        UpdateChamberStressedSoundDescription()
+    end
 
 	local optionsTable =
     {	-- BEGIN OF OPTIONS TABLE
@@ -517,7 +587,7 @@ local function BuildAddonMenu()
             	settings.warnings.normal.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
 			end,
             width="full",
-            default = settings.warnings.normal.color,
+            default = defaultSettings.warnings.normal.color,
 		},
 		{
 			type = "colorpicker",
@@ -528,7 +598,7 @@ local function BuildAddonMenu()
             	settings.warnings.medium.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
 			end,
             width="half",
-            default = settings.warnings.medium.color,
+            default = defaultSettings.warnings.medium.color,
 		},
 		{
 			type = "slider",
@@ -542,7 +612,7 @@ local function BuildAddonMenu()
 					settings.warnings.medium.valueMin = value
  				end,
             width="full",
-			default = settings.warnings.medium.valueMin,
+			default = defaultSettings.warnings.medium.valueMin,
 		},
 		{
 			type = "colorpicker",
@@ -553,7 +623,7 @@ local function BuildAddonMenu()
             	settings.warnings.low.color = {["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a}
 			end,
             width="half",
-            default = settings.warnings.low.color,
+            default = defaultSettings.warnings.low.color,
 		},
 		{
 			type = "slider",
@@ -567,7 +637,31 @@ local function BuildAddonMenu()
 					settings.warnings.low.valueMin = value
  				end,
             width="full",
-			default = settings.warnings.low.valueMin,
+			default = defaultSettings.warnings.low.valueMin,
+		},
+--==============================================================================
+   		{
+			type = "header",
+			name = fcoLP_loc["options_header_chamber"],
+			reference = "FCOLockpickerChamberHeader",
+		},
+		{
+			type = "slider",
+			name = fcoLP_loc["options_chamber_stressed_sound"],
+			tooltip = fcoLP_loc["options_chamber_stressed_sound_tooltip"],
+			min = 1,
+			max = #FCOLP.sounds,
+			getFunc = function()
+				return settings.chamberStressedSound end,
+			setFunc = function(idx)
+				settings.chamberStressedSound = idx
+				UpdateChamberStressedSoundDescription()
+
+				--Update the lockpick chamber stressed sound and play the currently chosen sound
+				updateLockpickChamberStressedSound(idx, true)
+			end,
+			width="full",
+			default = defaultSettings.chamberStressedSound,
 		},
 --==============================================================================
    		{
@@ -583,7 +677,7 @@ local function BuildAddonMenu()
             	settings.showChamberResolvedIcon = value
 			end,
             width="full",
-            default = settings.showChamberResolvedIcon,
+            default = defaultSettings.showChamberResolvedIcon,
 		},
         {
             type = "checkbox",
@@ -594,10 +688,11 @@ local function BuildAddonMenu()
                 settings.useSpringGreenColor = value
             end,
             width="full",
-            default = settings.useSpringGreenColor,
+            default = defaultSettings.useSpringGreenColor,
         },
 	} -- END OF OPTIONS TABLE
 
+	CM:RegisterCallback("LAM-PanelControlsCreated", FCOLAMPanelCreated)
 	LAM:RegisterOptionControls(addonName, optionsTable)
 end
 
@@ -813,6 +908,7 @@ local function LoadUserSettings()
         },
         showChamberResolvedIcon = false,
         useSpringGreenColor = false,
+		chamberStressedSound = 2, --"LOCKPICKING_CHAMBER_STRESS"
     }
 	local defaults = FCOLP.settingsVars.defaults
 
@@ -849,6 +945,9 @@ local function FCOLockpicker_Loaded(eventCode, addOnNameOfEachAddonLoaded)
 
 	--SavedVariables
     LoadUserSettings()
+
+	--Update the lockpick chamber stressed sound, silently
+	updateLockpickChamberStressedSound(FCOLP.settingsVars.settings.chamberStressedSound, false)
 
 	-- Set Localization
     Localization()

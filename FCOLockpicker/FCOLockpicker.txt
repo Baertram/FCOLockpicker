@@ -1,11 +1,11 @@
 ## Title: |c00FF00FCO |cFFFF00Lockpicker|r
 ## Author: Baertram
-## Version: 0.23
-## AddOnVersion: 002030
-## APIVersion: 101032 101033
+## Version: 0.26
+## AddOnVersion: 002060
+## APIVersion: 101036 101037
 ## Description: Show number of lockpicks left at chests in different colors, and color the lock's chambers to ease resolving
 ## SavedVariables: FCOLockpicker_Settings
-## DependsOn: LibAddonMenu-2.0>=32
+## DependsOn: LibAddonMenu-2.0>=34
 
 FCOLockpicker.lua
 
