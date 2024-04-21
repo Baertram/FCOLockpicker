@@ -373,6 +373,59 @@ FCOLP.localizationVars.localizationAll = {
 		["chatcommands_deepdebug_on"]            = "Глубокая отладка: Вкл.",
 		["chatcommands_deepdebug_off"]           = "Глубокая отладка: Выкл.",
 	},
+	--Chinese
+	[8] = {
+		-- Options menu
+        ["options_description"] 				 = "FCO Lockpicker 使用不同的颜色表示打开宝箱时开锁器的剩余数量。",
+		["options_header1"] 			 		 = "一般设置",
+    	["options_language"] 					 = "语言",
+		["options_language_tooltip"] 			 = "选择语言",
+		["options_language_use_client"] 		 = "使用客户端语言",
+		["options_language_use_client_tooltip"]  = "始终让插件使用游戏客户端的语言。",
+		["options_language_dropdown_selection1"] = "英语",
+		["options_language_dropdown_selection2"] = "德语",
+		["options_language_dropdown_selection3"] = "法语",
+		["options_language_dropdown_selection4"] = "西班牙语",
+		["options_language_dropdown_selection5"] = "意大利语",
+		["options_language_dropdown_selection6"] = "日语",
+		["options_language_dropdown_selection7"] = "俄语",
+		["options_language_dropdown_selection8"] = "中文",
+		["options_language_description1"]		 = "注意：更改语言/保存选项将重新加载用户界面！",
+        ["options_savedvariables"]				 = "保存设置",
+        ["options_savedvariables_tooltip"]       = "为玩家账户中的所有角色保存此插件设置，或是为每个角色分别保存各自设置",
+        ["options_savedVariables_dropdown_selection1"] = "单个角色",
+        ["options_savedVariables_dropdown_selection2"] = "玩家账户中的所有角色",
+		--Colors & values
+		["options_header_color"]				 = "颜色",
+		["options_normal_color"] 				 = "正常颜色",
+		["options_normal_color_tooltip"] 		 = "如果剩下的开锁器足够多，剩下的开锁器文本的颜色",
+		["options_normal_value"] 				 = "正常阈值",
+		["options_normal_value_tooltip"] 		 = "你至少需要多少个开锁器来触发正常颜色？",
+		["options_medium_color"] 				 = "中等颜色",
+		["options_medium_color_tooltip"] 		 = "如果还剩下一些开锁器，剩下的开锁器文本的颜色",
+		["options_medium_value"] 				 = "中等阈值",
+		["options_medium_value_tooltip"] 		 = "你至少需要多少个开锁器来触发中等颜色？",
+		["options_low_color"] 					 = "少量颜色",
+		["options_low_color_tooltip"] 			 = "如果只剩下少量几个开锁器，剩下的开锁器文本的颜色",
+		["options_low_value"] 					 = "少量阈值",
+		["options_low_value_tooltip"] 			 = "你至少需要多少个开锁器来触发少量颜色？",
+		["options_header_chamber_resolved"] 	 = "撬开锁芯",
+        ["options_show_chamber_resolved_icon"]	 = "显示锁芯被撬开图标",
+        ["options_show_chamber_resolved_icon_tooltip"]	 = "如果锁芯被成功撬开，显示一个提示图标。",
+		["options_show_chamber_resolved_green_springs"]	= "显示绿色弹簧",
+		["options_show_chamber_resolved_green_springs_tooltip"] = "如果锁芯被成功撬开，将锁芯弹簧变色。",
+		["options_header_chamber"]					= "锁芯声音",
+		["options_chamber_stressed_sound"] 			= "撬锁提示声音",
+		["options_chamber_stressed_sound_tooltip"] 	= "当锁芯弹簧处于正确位置时播放的声音。 默认声音为滑块数字“2” \"LOCKPICKING_CHAMBER_STRESS\", 滑块数字“1”的意思是：不播放声音\n\n滑动滑块以选择需要播放的声音。",
+        --Chat commands
+        ["chatcommands_info"]					 = "|c00FF00FCO|cFFFF00Lockpicker|cFFFFFF",
+        ["chatcommands_help"]					 = "|cFFFFFF'help' / 'list'|cFFFF00: 显示此插件的相关信息",
+        ["chatcommands_debug"]					 = "|cFFFFFF'debug'|cFFFF00: 启用/禁用调试信息。 |c990000[注意]|cFFFF00 这将充斥您的本地聊天框！",
+        ["chatcommands_debug_on"]				 = "调试：开",
+        ["chatcommands_debug_off"]				 = "调试：关",
+        ["chatcommands_deepdebug_on"]			 = "深度调试：开",
+        ["chatcommands_deepdebug_off"]			 = "深度调试：开",
+    },
 }
 --Meta table trick to use english localization for german and french values, which are missing
 local fco_lockpickerloc = FCOLP.localizationVars.localizationAll
@@ -382,3 +435,4 @@ setmetatable(fco_lockpickerloc[4], {__index = fco_lockpickerloc[1]})
 setmetatable(fco_lockpickerloc[5], {__index = fco_lockpickerloc[1]})
 setmetatable(fco_lockpickerloc[6], {__index = fco_lockpickerloc[1]})
 setmetatable(fco_lockpickerloc[7], {__index = fco_lockpickerloc[1]})
+setmetatable(fco_lockpickerloc[8], {__index = fco_lockpickerloc[1]})

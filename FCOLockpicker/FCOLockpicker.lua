@@ -22,7 +22,7 @@ FCOLP.addonVars.gAddonName                 = "FCOLockpicker"
 FCOLP.addonVars.addonNameMenu              = "FCO Lockpicker"
 FCOLP.addonVars.addonNameMenuDisplay       = "|c00FF00FCO |cFFFF00Lockpicker|r"
 FCOLP.addonVars.addonAuthor                = '|cFFFF00Baertram|r'
-FCOLP.addonVars.addonVersionOptions        = '0.26' -- version shown in the settings panel
+FCOLP.addonVars.addonVersionOptions        = '0.27' -- version shown in the settings panel
 FCOLP.addonVars.addonSavedVariablesName    = "FCOLockpicker_Settings"
 FCOLP.addonVars.addonSavedVariablesVersion = 0.01 -- Changing this will reset SavedVariables!
 FCOLP.addonVars.gAddonLoaded               = false
@@ -84,7 +84,7 @@ FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = {
 --Number variables
 FCOLP.numVars = {}
 --Available languages
-FCOLP.numVars.languageCount = 7 --English, German, French, Spanish, Italian, Japanese, Russian
+FCOLP.numVars.languageCount = 8 --English, German, French, Spanish, Italian, Japanese, Russian, Chinese
 FCOLP.langVars = {}
 FCOLP.langVars.languages = {}
 local numVars = FCOLP.numVars
@@ -358,6 +358,8 @@ local function Localization()
 	    	FCOLP.settingsVars.defaultSettings.language = 6
 	    elseif (lang == "ru") then
 	    	FCOLP.settingsVars.defaultSettings.language = 7
+	    elseif (lang == "zh") then
+	    	FCOLP.settingsVars.defaultSettings.language = 8
 		else
 	    	FCOLP.settingsVars.defaultSettings.language = 1
 	    end
