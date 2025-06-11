@@ -22,7 +22,7 @@ FCOLP.addonVars.gAddonName                 = "FCOLockpicker"
 FCOLP.addonVars.addonNameMenu              = "FCO Lockpicker"
 FCOLP.addonVars.addonNameMenuDisplay       = "|c00FF00FCO |cFFFF00Lockpicker|r"
 FCOLP.addonVars.addonAuthor                = '|cFFFF00Baertram|r'
-FCOLP.addonVars.addonVersionOptions        = '0.28' -- version shown in the settings panel
+FCOLP.addonVars.addonVersionOptions        = '0.29' -- version shown in the settings panel
 FCOLP.addonVars.addonSavedVariablesName    = "FCOLockpicker_Settings"
 FCOLP.addonVars.addonSavedVariablesVersion = 0.01 -- Changing this will reset SavedVariables!
 FCOLP.addonVars.gAddonLoaded               = false
@@ -68,6 +68,295 @@ FCOLP.settingsVars					= {}
 FCOLP.settingsVars.settings 		= {}
 FCOLP.settingsVars.defaultSettings	= {}
 local showChamberResolvedIcon
+local chamberResolvedSpringColor
+
+local chamberResolvedIcons = {
+	[[/esoui/art/guild/guildheraldry_indexicon_finalize_down.dds]],
+	[[/esoui/art/campaign/campaignbrowser_fullpop.dds]],
+	[[/esoui/art/inventory/inventory_tabicon_armor_disabled.dds]],
+	[[/esoui/art/crafting/smithing_tabicon_research_disabled.dds]],
+	[[/esoui/art/tradinghouse/tradinghouse_sell_tabicon_disabled.dds]],
+	[[/esoui/art/campaign/overview_indexicon_bonus_disabled.dds]],
+	[[/esoui/art/ava/tabicon_bg_score_disabled.dds]],
+	[[/esoui/art/guild/guild_rankicon_leader_large.dds]],
+	[[/esoui/art/lfg/lfg_healer_up.dds]],
+	[[/esoui/art/miscellaneous/timer_32.dds]],
+	[[/esoui/art/crafting/alchemy_tabicon_solvent_up.dds]],
+	[[/esoui/art/buttons/cancel_up.dds]],
+	[[/esoui/art/buttons/info_up.dds]],
+	[[/esoui/art/buttons/pinned_normal.dds]],
+	[[/esoui/art/cadwell/cadwell_indexicon_gold_up.dds]],
+	[[/esoui/art/cadwell/cadwell_indexicon_silver_up.dds]],
+	[[/esoui/art/campaign/campaignbonus_keepicon.dds]],
+	[[/esoui/art/icons/scroll_005.dds]],
+	[[/esoui/art/campaign/campaignbrowser_columnheader_ad.dds]],
+	[[/esoui/art/campaign/campaignbrowser_columnheader_dc.dds]],
+	[[/esoui/art/campaign/campaignbrowser_columnheader_ep.dds]],
+	[[/esoui/art/campaign/campaignbrowser_guild.dds]],
+	[[/esoui/art/campaign/campaignbrowser_indexicon_normal_up.dds]],
+	[[/esoui/art/campaign/overview_indexicon_scoring_up.dds]],
+	[[/esoui/art/charactercreate/charactercreate_bodyicon_up.dds]],
+	[[/esoui/art/characterwindow/gearslot_offhand.dds]],
+	[[/esoui/art/characterwindow/gearslot_mainhand.dds]],
+	[[/esoui/art/characterwindow/gearslot_costume.dds]],
+	[[/esoui/art/chatwindow/chat_mail_up.dds]],
+	[[/esoui/art/chatwindow/chat_notification_up.dds]],
+	[[/esoui/art/crafting/alchemy_tabicon_reagent_up.dds]],
+	[[/esoui/art/crafting/smithing_tabicon_refine_up.dds]],
+	[[/esoui/art/deathrecap/deathrecap_killingblow_icon.dds]],
+	[[/esoui/art/fishing/bait_emptyslot.dds]],
+	[[/esoui/art/guild/guildhistory_indexicon_guildbank_up.dds]],
+	[[/esoui/art/guild/guild_indexicon_member_up.dds]],
+	[[/esoui/art/guild/tabicon_roster_up.dds]],
+	[[/esoui/art/icons/poi/poi_dungeon_complete.dds]],
+	[[/esoui/art/icons/poi/poi_groupinstance_complete.dds]],
+	[[/esoui/art/icons/servicemappins/servicepin_magesguild.dds]],
+	[[/esoui/art/icons/servicemappins/servicepin_fightersguild.dds]],
+	[[/esoui/art/lfg/lfg_dps_up.dds]],
+	[[/esoui/art/lfg/lfg_leader_icon.dds]],
+	[[/esoui/art/lfg/lfg_tank_up.dds]],
+	[[/esoui/art/lfg/lfg_veterandungeon_up.dds]],
+	[[/esoui/art/lfg/lfg_normaldungeon_up.dds]],
+	[[/esoui/art/progression/icon_dualwield.dds]],
+	[[/esoui/art/progression/icon_firestaff.dds]],
+	[[/esoui/art/progression/icon_bows.dds]],
+	[[/esoui/art/progression/icon_2handed.dds]],
+	[[/esoui/art/progression/icon_1handed.dds]],
+	[[/esoui/art/progression/progression_tabicon_backup_inactive.dds]],
+	[[/esoui/art/repair/inventory_tabicon_repair_disabled.dds]],
+	[[/esoui/art/worldmap/selectedquesthighlight.dds]],
+	[[/esoui/art/guild/guildHeraldry_indexIcon_background_up.dds]],
+	[[/esoui/art/crafting/enchantment_tabicon_deconstruction_disabled.dds]],
+	[[/esoui/art/crafting/smithing_tabicon_improve_disabled.dds]],
+	[[/esoui/art/bank/bank_tabicon_deposit_up.dds]],
+	[[/esoui/art/currency/currency_gold.dds]],
+	[[/esoui/art/guild/guild_bankaccess.dds]],
+	[[/esoui/art/progression/progression_indexicon_guilds_up.dds]],
+	[[/esoui/art/buttons/accept_up.dds]],
+	[[/esoui/art/buttons/checkbox_checked.dds]],
+	[[/esoui/art/buttons/checkbox_indeterminate.dds]],
+	[[/esoui/art/buttons/dropbox_arrow_normal.dds]],
+	[[/esoui/art/buttons/decline_up.dds]],
+	[[/esoui/art/buttons/edit_cancel_up.dds]],
+	[[/esoui/art/buttons/edit_up.dds]],
+	[[/esoui/art/buttons/edit_save_up.dds]],
+	[[/esoui/art/buttons/gamepad/console-widget-slider.dds]],
+	[[/esoui/art/buttons/gamepad/console-widget-stepper.dds]],
+	[[/esoui/art/buttons/gamepad/gp_checkbox_down.dds]],
+	[[/esoui/art/buttons/gamepad/gp_checkbox_up.dds]],
+	[[/esoui/art/buttons/gamepad/gp_downarrow.dds]],
+	[[/esoui/art/buttons/gamepad/gp_menu_rightarrow.dds]],
+	[[/esoui/art/buttons/gamepad/gp_uparrow.dds]],
+	[[/esoui/art/buttons/gamepad/gp_spinnerlr.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_circle.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_ls.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_rs.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_share.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_square.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_trackpad_circle.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_trackpad_leftright.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_trackpad_lefttoright.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_triangle.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_trackpad_updown.dds]],
+	[[/esoui/art/buttons/gamepad/ps4/nav_ps4_x.dds]],
+	[[/esoui/art/buttons/gamepad/xbox/leftarrow_down.dds]],
+	[[/esoui/art/buttons/gamepad/xbox/nav_xbone_a.dds]],
+	[[/esoui/art/buttons/gamepad/xbox/nav_xbone_b.dds]],
+	[[/esoui/art/buttons/gamepad/xbox/nav_xbone_dpadright.dds]],
+	[[/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_menu.dds]],
+	[[/esoui/art/buttons/gamepad/xbox/nav_xbone_x.dds]],
+	[[/esoui/art/buttons/gamepad/xbox/nav_xbone_y.dds]],
+	[[/esoui/art/buttons/radiobuttonup.dds]],
+	[[/esoui/art/buttons/radiobuttondown.dds]],
+	[[/esoui/art/buttons/smoothsliderbutton_up.dds]],
+	[[/esoui/art/buttons/swatchframe_selected.dds]],
+	[[/esoui/art/buttons/switch_disabled.dds]],
+	[[/esoui/art/buttons/unpinned_normal.dds]],
+	[[/esoui/art/mounts/tabicon_mounts_disabled.dds]],
+	[[/esoui/art/mounts/tabicon_ridingskills_disabled.dds]],
+	[[/esoui/art/mounts/ridingskill_stamina.dds]],
+	[[/esoui/art/mounts/ridingskill_speed.dds]],
+	[[/esoui/art/mounts/ridingskill_ready.dds]],
+	[[/esoui/art/mounts/ridingskill_capacity.dds]],
+	[[/esoui/art/mounts/feed_icon.dds]],
+	[[/esoui/art/mounts/activemount_icon.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_communications.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_collections.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_character.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_champion.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_achievements.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_contacts.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_crowncrates.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_emotes.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_groups.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_journal.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_logout.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_lorelibrary.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_multiplayer.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_settings.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_store.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_submitfeedback.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_terms.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_textchat.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_icon_unstuck.dds]],
+	[[/esoui/art/menubar/gamepad/gp_playermenu_statusicon_pointstospend.dds]],
+	[[/esoui/art/tutorial/bank_tabicon_deposit_up.dds]],
+	[[/esoui/art/bank/bank_tabicon_gold_up.dds]],
+	[[/esoui/art/bank/bank_tabicon_telvar_up.dds]],
+	[[/esoui/art/tutorial/bank_tabicon_withdraw_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc09_up.dds]],
+	[[/esoui/art/icons/store_upgrade_bank.dds]],
+	[[/esoui/art/campaign/campaignbrowser_guild.dds]],
+	[[/esoui/art/currency/currency_fightersguild.dds]],
+	[[/esoui/art/currency/currency_magesguild.dds]],
+	[[/esoui/art/currency/currency_thievesguild.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_heraldryaccess.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_menuicon_customization.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_menuicon_leaveguild.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_menuicon_ownership.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_menuicon_purchases.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_menuicon_releaseownership.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_menuicon_trader.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_menuicon_unlocks.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_options_changeicon.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_options_permissions.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_options_rename.dds]],
+	[[/esoui/art/guild/gamepad/gp_guild_tradinghouseaccess.dds]],
+	[[/esoui/art/treeicons/gamepad/gp_tutorial_idexicon_thievesguild.dds]],
+	[[/esoui/art/tutorial/guild-tabicon_heraldry_up.dds]],
+	[[/esoui/art/tutorial/guild-tabicon_home_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_leader_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_recruit_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_officer_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc01_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc02_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc03_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc04_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc05_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc06_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc07_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc08_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc10_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc11_up.dds]],
+	[[/esoui/art/tutorial/guild_indexicon_misc12_up.dds]],
+	[[/esoui/art/guild/guildbanner_icon_aldmeri.dds]],
+	[[/esoui/art/guild/guildbanner_icon_daggerfall.dds]],
+	[[/esoui/art/guild/guildbanner_icon_ebonheart.dds]],
+	[[/esoui/art/tutorial/guildheraldry_indexicon_background_up.dds]],
+	[[/esoui/art/guild/guildheraldry_indexicon_crest_up.dds]],
+	[[/esoui/art/tutorial/guildstore-tradinghouse_listings_tabicon_up.dds]],
+	[[/esoui/art/tutorial/progression_tabicon_fightersguild_up.dds]],
+	[[/esoui/art/tutorial/progression_tabicon_magesguild_up.dds]],
+	[[/esoui/art/icons/store_thievesguilddlc_collectable.dds]],
+	[[/esoui/art/tutorial/tabicon_createguild_up.dds]],
+	[[/esoui/art/voip/voip-guild.dds]],
+	[[/esoui/art/death/death_timer_fill.dds]],
+	[[/esoui/art/death/death_soulreservoir_icon.dds]],
+	[[/esoui/art/currency/alliancepoints_32.dds]],
+	[[/esoui/art/tutorial/inventory_trait_retrait_icon.dds]],
+	[[/esoui/art/currency/currency_gold_32.dds]],
+	[[/esoui/art/currency/currency_inspiration_32.dds]],
+	[[/esoui/art/currency/currency_seedcrystal_32.dds]],
+	[[/esoui/art/currency/currency_seedcrystals_multi_mipmap.dds]],
+	[[/esoui/art/currency/currency_telvar_32.dds]],
+	[[/esoui/art/currency/currency_writvoucher.dds]],
+	[[/esoui/art/dye/dye_hat.dds]],
+	[[/esoui/art/dye/dye_swatch_highlight.dds]],
+	[[/esoui/art/dye/dyes_categoryicon_up.dds]],
+	[[/esoui/art/dye/dyes_tabicon_outfitstyledye_up.dds]],
+	[[/esoui/art/dye/outfitslot_staff.dds]],
+	[[/esoui/art/dye/outfitslot_twohanded.dds]],
+	[[/esoui/art/armory/builditem_icon.dds]],
+	[[/esoui/art/armory/newbuild_icon.dds]],
+	[[/esoui/art/unitframes/groupicon_leader.dds]],
+	[[/esoui/art/companion/keyboard/category_u30_companions_up.dds]],
+	[[/esoui/art/battlegrounds/battlegroundscapturebar_teambadge_green.dds]],
+	[[/esoui/art/battlegrounds/battlegroundscapturebar_teambadge_orange.dds]],
+	[[/esoui/art/battlegrounds/battlegroundscapturebar_teambadge_purple.dds]],
+	[[/esoui/art/icons/store_battleground.dds]],
+	[[/esoui/art/collections/collections_tabIcon_itemSets_down.dds]],
+	[[/esoui/art/collections/collections_tabIcon_itemSets_up.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_1.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_2.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_3.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_4.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_5.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_6.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_7.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_8.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_9.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_10.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_11.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_12.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_13.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_14.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_15.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_16.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_17.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_18.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_19.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_20.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_21.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_22.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_23.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_24.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_25.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_26.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_27.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_28.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_29.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_30.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_31.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_32.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_33.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_34.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_35.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_36.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_37.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_38.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_39.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_40.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_41.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_42.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_43.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_44.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_45.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_46.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_47.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_48.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_49.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_50.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_51.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_52.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_53.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_54.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_55.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_56.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_57.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_58.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_59.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_60.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_61.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_62.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_63.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_64.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_65.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_66.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_67.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_68.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_69.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_70.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_71.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_72.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_73.dds]],
+	[[/esoui/art/armory/buildicons/buildicon_74.dds]],
+	[[/esoui/art/inventory/gamepad/gp_inventory_icon_companionitems.dds]],
+}
+
+local chamberResolvedIconsTooltips = {}
+for idx, texturePath in ipairs(chamberResolvedIcons) do
+	chamberResolvedIconsTooltips[idx] = texturePath
+end
 
 --Prevention booleans
 FCOLP.preventerVars = {}
@@ -114,8 +403,8 @@ local blueText 	= FCOLP.preChatTextBlue
 --Local speed up variables
 local chamberResolvedUniqueName = addonName .. "_LockPickChamberResolvedCheck"
 local FCOLockpicker_chamberResolvedIcon
-local chamberPinResolvedColor = 	{r=0, g=1, b=0, a=1} -- green chamber pin color
-local chamberPinNotResolvedColor =	{r=1, g=1, b=1, a=1} -- normal chamber pin color
+local chamberPinResolvedColor
+local chamberPinNotResolvedColor = ZO_ColorDef:New(1,1,1,1) -- normal chamber pin color
 
 --===================== FUNCTIONS ==============================================
 
@@ -146,6 +435,15 @@ local function getGamepadOrKeyboardStr(gamePadMode)
 	return gpOrKbStr[gamePadMode]
 end
 ]]
+
+local function texturePathToId(texturePath)
+	if texturePath == nil then return end
+	return ZO_IndexOfElementInNumericallyIndexedTable(chamberResolvedIcons, texturePath)
+end
+
+local function idToTexturePath(textureId)
+	return chamberResolvedIcons[textureId]
+end
 
 local function checkAndRememberChatMinimizedState(gamePadMode, doNotMinimize)
 	if gamePadMode == nil then gamePadMode = iigpm() end
@@ -227,6 +525,20 @@ local function FCOLockpicker_updateLockpicksLeftText(lockpickTextCtrl)
 	end
 end
 
+local function FCOLockPicker_UpdateLockpickChamberResolvedIcon()
+	local chamberResolvedTexture = FCOLP.FCOLockpicker_chamberResolvedIconTexture
+	if not chamberResolvedTexture then return end
+
+	local settings = FCOLP.settingsVars.settings
+
+	chamberResolvedTexture:SetAnchorFill()
+	chamberResolvedTexture:SetTexture(idToTexturePath(settings.chamberResolvedIcon))
+	chamberResolvedTexture:SetColor(unpack(settings.chamberResolvedIconColor))
+	chamberResolvedTexture:SetDrawLayer(DL_OVERLAY)
+	chamberResolvedTexture:SetDrawTier(DT_HIGH)
+	chamberResolvedTexture:SetDrawLevel(5) --high level to overlay others
+end
+
 local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	FCOLP.topLevelChamberResolvedIcon = CreateTopLevelWindow(addonName .. "_ChamberResolvedIcon", GuiRoot)
 	local tlc = FCOLP.topLevelChamberResolvedIcon
@@ -238,16 +550,11 @@ local function FCOLockPicker_CreateLockpickChamberResolvedIcon()
 	tlc:SetDrawLevel(5)--high level to overlay others
 
 	FCOLP.FCOLockpicker_chamberResolvedIconTexture = CreateControl(addonName .. "_ChamberResolvedIconTexture", tlc, CT_TEXTURE)
-	local chamberResolvedTexture = FCOLP.FCOLockpicker_chamberResolvedIconTexture
-	chamberResolvedTexture:SetAnchorFill()
-	chamberResolvedTexture:SetTexture("/esoui/art/guild/guildheraldry_indexicon_finalize_down.dds")
-	chamberResolvedTexture:SetColor(0, 1, 0, 1)
-	chamberResolvedTexture:SetDrawLayer(DL_OVERLAY)
-	chamberResolvedTexture:SetDrawTier(DT_HIGH)
-    chamberResolvedTexture:SetDrawLevel(5) --high level to overlay others
 
 	FCOLP.FCOLockpicker_chamberResolvedIcon = FCOLP.topLevelChamberResolvedIcon
 	FCOLockpicker_chamberResolvedIcon = FCOLP.topLevelChamberResolvedIcon
+
+	FCOLockPicker_UpdateLockpickChamberResolvedIcon()
 end
 
 local function FCOLockpicker_CheckLockpickChamberResolved()
@@ -276,8 +583,8 @@ local function FCOLockpicker_CheckLockpickChamberResolved()
 	if useColors == true then
 		local currentSpringPin = currentSpring.pin
 		if not currentSpringPin then return end
-		local chamberPinColor = (chamberWasResolved == true and chamberPinResolvedColor) or chamberPinNotResolvedColor
-		currentSpringPin:SetColor(chamberPinColor.r, chamberPinColor.g, chamberPinColor.b, chamberPinColor.a)
+		local chamberPinColor = (chamberWasResolved == true and chamberResolvedSpringColor) or chamberPinNotResolvedColor
+		currentSpringPin:SetColor(chamberPinColor:UnpackRGBA())
 	end
 end
 
@@ -435,6 +742,7 @@ local function updateLockpickChamberStressedSound(idx, doPlaySound)
 	end
 end
 
+------------------------------------------------------------------------------------------------------------------------
 -- Build the options menu
 local function BuildAddonMenu()
 	local panelData = {
@@ -488,11 +796,20 @@ local function BuildAddonMenu()
 		FCOLockpickerChamberHeader:UpdateValue()
     end
 
+	local lockPickChamberResolvedPreviewIconColor
+	local function UpdateLockpickChamberResolvedPreviewIcon()
+		if FCOLockpicker_LAMChamberResolvedPreviewIcon == nil then return end
+		lockPickChamberResolvedPreviewIconColor = ZO_ColorDef:New(unpack(settings.chamberResolvedIconColor))
+		FCOLockpicker_LAMChamberResolvedPreviewIcon:SetColor(lockPickChamberResolvedPreviewIconColor)
+		FCOLockpicker_LAMChamberResolvedPreviewIcon.icon:SetColor(unpack(settings.chamberResolvedIconColor))
+	end
+
 --LAM 2.0 callback function if the panel was created
     local FCOLAMPanelCreated
 	FCOLAMPanelCreated = function(panel)
         if panel ~= FCOLP.SettingsPanel then return end
         UpdateChamberStressedSoundDescription()
+		UpdateLockpickChamberResolvedPreviewIcon()
     end
 
 	local optionsTable =
@@ -681,6 +998,37 @@ local function BuildAddonMenu()
             width="full",
             default = defaultSettings.showChamberResolvedIcon,
 		},
+		{
+			type = "iconpicker",
+			name = fcoLP_loc["options_chamber_resolved_icon"],
+			tooltip = fcoLP_loc["options_chamber_resolved_icon"],
+			choices = chamberResolvedIcons,
+			choicesTooltips = chamberResolvedIconsTooltips,
+			defaultColor = ZO_ColorDef:New(settings.chamberResolvedIconColor),
+			getFunc = function() return idToTexturePath(settings.chamberResolvedIcon) end,
+            setFunc = function(value)
+            	settings.chamberResolvedIcon = texturePathToId(value)
+				FCOLockPicker_UpdateLockpickChamberResolvedIcon()
+			end,
+            width="half",
+            default = defaultSettings.chamberResolvedIcon,
+			disabled = function() return not settings.showChamberResolvedIcon end,
+			reference = "FCOLockpicker_LAMChamberResolvedPreviewIcon"
+		},
+		{
+			type = "colorpicker",
+			name = fcoLP_loc["options_show_chamber_resolved_icon_color"],
+			tooltip = fcoLP_loc["options_show_chamber_resolved_icon_color_tooltip"],
+			getFunc = function() return unpack(settings.chamberResolvedIconColor) end,
+            setFunc = function(r,g,b,a)
+            	settings.chamberResolvedIconColor = {r, g, b, a}
+				UpdateLockpickChamberResolvedPreviewIcon()
+				FCOLockPicker_UpdateLockpickChamberResolvedIcon()
+			end,
+            width="half",
+            default = defaultSettings.chamberResolvedIconColor,
+			disabled = function() return not settings.showChamberResolvedIcon end
+		},
         {
             type = "checkbox",
             name = fcoLP_loc["options_show_chamber_resolved_green_springs"],
@@ -689,14 +1037,28 @@ local function BuildAddonMenu()
             setFunc = function(value)
                 settings.useSpringGreenColor = value
             end,
-            width="full",
+            width="half",
             default = defaultSettings.useSpringGreenColor,
         },
+		{
+			type = "colorpicker",
+			name = fcoLP_loc["options_show_chamber_resolved_green_springs_color"],
+			tooltip = fcoLP_loc["options_show_chamber_resolved_green_springs_color_tooltip"],
+			getFunc = function() return unpack(settings.useSpringGreenColorColor) end,
+            setFunc = function(r,g,b,a)
+            	settings.useSpringGreenColorColor = {r, g, b, a}
+				chamberResolvedSpringColor = ZO_ColorDef:New(unpack(settings.useSpringGreenColorColor))
+			end,
+            width="half",
+            default = defaultSettings.useSpringGreenColorColor,
+			disabled = function() return not settings.useSpringGreenColor end
+		},
 	} -- END OF OPTIONS TABLE
 
 	CM:RegisterCallback("LAM-PanelControlsCreated", FCOLAMPanelCreated)
 	LAM:RegisterOptionControls(addonName, optionsTable)
 end
+------------------------------------------------------------------------------------------------------------------------
 
 --==============================================================================
 --============================== END SETTINGS ==================================
@@ -909,7 +1271,11 @@ local function LoadUserSettings()
             },
         },
         showChamberResolvedIcon = false,
+		chamberResolvedIcon = 1,
+		chamberResolvedIconColor = {0, 1, 0, 1},
+
         useSpringGreenColor = false,
+		useSpringGreenColorColor = {0, 1, 0, 1},
 		chamberStressedSound = 2, --"LOCKPICKING_CHAMBER_STRESS"
     }
 	local defaults = FCOLP.settingsVars.defaults
@@ -949,7 +1315,9 @@ local function FCOLockpicker_Loaded(eventCode, addOnNameOfEachAddonLoaded)
     LoadUserSettings()
 
 	--Update the lockpick chamber stressed sound, silently
-	updateLockpickChamberStressedSound(FCOLP.settingsVars.settings.chamberStressedSound, false)
+	local settings = FCOLP.settingsVars.settings
+	chamberResolvedSpringColor = ZO_ColorDef:New(unpack(settings.useSpringGreenColorColor))
+	updateLockpickChamberStressedSound(settings.chamberStressedSound, false)
 
 	-- Set Localization
     Localization()
