@@ -22,7 +22,7 @@ FCOLP.localizationVars.localizationAll = {
 	--English
     [1] = {
 		-- Options menu
-        ["options_description"] 				 = "FCO Lockpicker shows the lockpicks you got left during opening of a chest in different colors",
+        ["options_description"] 				 = "FCO Lockpicker shows the lockpicks you got left during opening of a chest in different colors, and it adds visual helpers to the lockpicking of the chambers.",
 		["options_header1"] 			 		 = "General settings",
     	["options_language"] 					 = "Language",
 		["options_language_tooltip"] 			 = "Choose the language",
@@ -81,7 +81,7 @@ FCOLP.localizationVars.localizationAll = {
 	--German / Deutsch
     [2] = {
 		-- Options menu
-        ["options_description"] 				 = "FCO Lockpicker zeigt Ihnen die restlichen Dietriche beim Öffnen einer Kiste farblich markiert an",
+        ["options_description"] 				 = "FCO Lockpicker zeigt Ihnen die restlichen Dietriche beim Öffnen einer Kiste farblich markiert an, und es bietet visuelle Hilfen für den Lockpick-Vorgang an.",
 		["options_header1"] 			 		 = "Generelle Einstellungen",
     	["options_language"] 					 = "Sprache",
 		["options_language_tooltip"] 			 = "Wählen Sie die Sprache aus",
