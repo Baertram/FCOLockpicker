@@ -255,6 +255,9 @@ local function Localization()
 	local settings = settingsBase.settings
 	local defSettings = settingsBase.defaultSettings
 	local defLang = defSettings.language
+	local langVars = FCOLP.langVars
+	local langToLanguageIndex = langVars.langToLanguageIndex
+
 
 	--Always use the client's language?
     if not settings.alwaysUseClientLanguage then
@@ -265,8 +268,8 @@ local function Localization()
 --d("[FCOLP] Localization: defaultSettings.language is NIL -> Fallback to english now")
 		    	fallbackToEnglish = true
 		    else
-				local languages = FCOLP.langVars.languages
 				--Is the languages array filled and the language is not valid (not in the language array with the value "true")?
+				local languages = langVars.languages
 				if languages ~= nil and #languages > 0 and not languages[defLang] then
 		        	fallbackToEnglish = true
 --d("[FCOLP] Localization: defaultSettings.language is ~= " .. i .. ", and this language # is not valid -> Fallback to english now")
@@ -285,25 +288,7 @@ local function Localization()
 --d("[FCOLP] localization: Language chosen is false or always use client language is true!")
 		local lang = GetCVar("language.2")
 		--Check for supported languages
-		if(lang == "de") then
-	    	FCOLP.settingsVars.defaultSettings.language = 2
-	    elseif (lang == "en") then
-	    	FCOLP.settingsVars.defaultSettings.language = 1
-	    elseif (lang == "fr") then
-	    	FCOLP.settingsVars.defaultSettings.language = 3
-	    elseif (lang == "es") then
-	    	FCOLP.settingsVars.defaultSettings.language = 4
-	    elseif (lang == "it") then
-	    	FCOLP.settingsVars.defaultSettings.language = 5
-	    elseif (lang == "jp") then
-	    	FCOLP.settingsVars.defaultSettings.language = 6
-	    elseif (lang == "ru") then
-	    	FCOLP.settingsVars.defaultSettings.language = 7
-	    elseif (lang == "zh") then
-	    	FCOLP.settingsVars.defaultSettings.language = 8
-		else
-	    	FCOLP.settingsVars.defaultSettings.language = 1
-	    end
+		FCOLP.settingsVars.defaultSettings.language = langToLanguageIndex[lang] or 1 --fallback 1 = English
 	end
 --d("[FCOLP] localization: default settings, language: " .. tostring(FCOLP.settingsVars.defaultSettings.language))
     --Get the localized texts from the localization file

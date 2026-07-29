@@ -35,6 +35,8 @@ FCOLP.localizationVars.localizationAll = {
 		["options_language_dropdown_selection5"] = "Italian",
 		["options_language_dropdown_selection6"] = "Japanese",
 		["options_language_dropdown_selection7"] = "Russian",
+		["options_language_dropdown_selection8"] = "Chinese",
+		["options_language_dropdown_selection9"] = "Ukrainian",
 		["options_language_description1"]		 = "CAUTION: Changing the language/save option will reload the user interface!",
         ["options_savedvariables"]				 = "Save settings",
         ["options_savedvariables_tooltip"]       = "Save the addon settings for all your characters of your account, or single for each character",
@@ -94,6 +96,8 @@ FCOLP.localizationVars.localizationAll = {
 		["options_language_dropdown_selection5"] = "Italienisch",
 		["options_language_dropdown_selection6"] = "Japanisch",
 		["options_language_dropdown_selection7"] = "Russisch",
+		["options_language_dropdown_selection8"] = "Chinesisch",
+		["options_language_dropdown_selection9"] = "Ukrainisch",
 		["options_language_description1"]		 = "ACHTUNG: Veränderungen der Sprache/der Speicherart laden die Benutzeroberfläche neu!",
         ["options_savedvariables"]				 = "Einstellungen speichern",
         ["options_savedvariables_tooltip"]       = "Die Einstellungen dieses Addons werden für alle Charactere Ihres Accounts, oder für jeden Character einzeln gespeichert",
@@ -153,6 +157,8 @@ FCOLP.localizationVars.localizationAll = {
         ["options_language_dropdown_selection5"]	 	 = "Italien",
 		["options_language_dropdown_selection6"] 		 = "Japonais",
         ["options_language_dropdown_selection7"] 		 = "Russe",
+		["options_language_dropdown_selection8"] 		 = "Chinois",
+		["options_language_dropdown_selection9"] 		 = "Ukrainien",
 		["options_language_description1"]				 = "ATTENTION : Modifier un de ces réglages provoquera un chargement",
 		["options_savedvariables"]						 = "Sauvegarder",
 		["options_savedvariables_tooltip"] 				 = "Sauvegarder les données de l'addon pour tous les personages du compte, ou individuellement pour chaque personage",
@@ -203,6 +209,8 @@ FCOLP.localizationVars.localizationAll = {
         ["options_language_dropdown_selection5"] 		 = "Italiano",
 		["options_language_dropdown_selection6"] 		 = "Japonés",
         ["options_language_dropdown_selection7"] 		 = "Ruso",
+		["options_language_dropdown_selection8"] 		 = "Chino",
+		["options_language_dropdown_selection9"] 		 = "Ucranio",
 		["options_language_description1"]				 = "CUIDADO: Modificar uno de esos parámetros recargará la interfaz",
 		["options_savedvariables"]						 = "Guardar",
 		["options_savedvariables_tooltip"] 				 = "Guardar los parámetros del addon para toda la cuenta o individualmente para cada personaje",
@@ -236,57 +244,6 @@ FCOLP.localizationVars.localizationAll = {
         ["chatcommands_deepdebug_on"]			 = "Deep debug: ON",
         ["chatcommands_deepdebug_off"]			 = "Deep debug: OFF",
 	},
---==============================================================================
---Italian
-	[5] = {
-		-- Options menu
-        ["options_description"] 				 		 = "FCO Lockpicker shows the lockpicks you got left during opening of a chest in different colors",
-		["options_header1"] 							 = "General",
-		["options_language"]							 = "Idioma",
-		["options_language_tooltip"]					 = "Elegir idioma",
-		["options_language_use_client"] 		 		 = "Utilizzare la lingua del client",
-		["options_language_use_client_tooltip"]  		 = "Lasciate sempre l'addon usare il linguaggio del client di gioco.",
-        ["options_language_dropdown_selection1"] = "Inglese",
-        ["options_language_dropdown_selection2"] = "Germano",
-        ["options_language_dropdown_selection3"] = "Francese",
-        ["options_language_dropdown_selection4"] = "Spagnolo",
-        ["options_language_dropdown_selection5"] = "Italiano",
-		["options_language_dropdown_selection6"]  = "Giapponese",
-        ["options_language_dropdown_selection7"] = "Russo",
-		["options_language_description1"]				 = "CUIDADO: Modificar uno de esos parámetros recargará la interfaz",
-		["options_savedvariables"]						 = "Guardar",
-		["options_savedvariables_tooltip"] 				 = "Guardar los parámetros del addon para toda la cuenta o individualmente para cada personaje",
-		["options_savedVariables_dropdown_selection1"]	 = "Individualmente",
-		["options_savedVariables_dropdown_selection2"]	 = "Cuenta",
-		--Colors & values
-		["options_header_color"]				 = "Colors",
-		["options_normal_color"] 				 = "Normal color",
-		["options_normal_color_tooltip"] 		 = "The color of the lockpicks left text if you got enough lockpicks left",
-		["options_normal_value"] 				 = "Normal threshold value",
-		["options_normal_value_tooltip"] 		 = "How many lockpicks do you need at least for 'normal' color?",
-		["options_medium_color"] 				 = "Medium color",
-		["options_medium_color_tooltip"] 		 = "The color of the lockpicks left text if you got some lockpicks left",
-		["options_medium_value"] 				 = "Medium threshold value",
-		["options_medium_value_tooltip"] 		 = "How many lockpicks do you need at least for 'medium' color?",
-		["options_low_color"] 					 = "Low color",
-		["options_low_color_tooltip"] 			 = "The color of the lockpicks left text if you got only a few lockpicks left",
-		["options_low_value"] 					 = "Low threshold value",
-		["options_low_value_tooltip"] 			 = "How many lockpicks do you need at least for 'low' color?",
-		["options_header_chamber_resolved"] 	 = "Chamber resolved",
-        ["options_show_chamber_resolved_icon"]	 = "Show chamber resolved icon",
-        ["options_show_chamber_resolved_icon_tooltip"]	 = "Show an icon if the actual lock's chamber has been resolved",
-        ["options_show_chamber_resolved_green_springs"]	= "Show green springs",
-        ["options_show_chamber_resolved_green_springs_tooltip"] = "Colorize the srping of the lock green if the chamber is resolved.",
-		--Chat commands
-		["chatcommands_info"]	 				 = "|c00FF00FCO|cFFFF00Lockpicker|cFFFFFF",
-		["chatcommands_help"]	 				 = "|cFFFFFF'help' / 'list'|cFFFF00: Muestra esta información acerca del addon",
-        ["chatcommands_debug"]					 = "|cFFFFFF'debug'|cFFFF00: Activar/Desactivar los mensajes de debug. [Advertencia] ¡Esto llenará la ventana de chat!",
-        ["chatcommands_debug_on"]				 = "Debug: ON",
-        ["chatcommands_debug_off"]				 = "Debug: OFF",
-        ["chatcommands_deepdebug_on"]			 = "Deep debug: ON",
-        ["chatcommands_deepdebug_off"]			 = "Deep debug: OFF",
-	},
---==============================================================================
 	--Japanese
     [6] = {
 		-- Options menu
@@ -303,6 +260,8 @@ FCOLP.localizationVars.localizationAll = {
 		["options_language_dropdown_selection5"] = "イタリア語",
 		["options_language_dropdown_selection6"] = "日本語",
 		["options_language_dropdown_selection7"] = "ロシア語",
+		["options_language_dropdown_selection8"] 		 = "中国",
+		["options_language_dropdown_selection9"] 		 = "ウクライナ語",
 		["options_language_description1"]		 = "注意: 言語の変更/設定の保存時にはUIがリロードされます！",
         ["options_savedvariables"]				 = "設定の保存",
         ["options_savedvariables_tooltip"]       = "アドオンの設定をアカウントの全キャラクターまたはキャラクター毎に保存します",
@@ -352,6 +311,8 @@ FCOLP.localizationVars.localizationAll = {
 		["options_language_dropdown_selection5"] = "Итaльянcкий",
 		["options_language_dropdown_selection6"] = "Япoнcкий",
 		["options_language_dropdown_selection7"] = "Pуccкий",
+		["options_language_dropdown_selection8"] 		 = "китайский",
+		["options_language_dropdown_selection9"] 		 = "Yкраинский",
 		["options_language_description1"]        = "ВНИМAНИE: Измeнeниe языкa/нacтpoeк coxpaнeния пpивeдeт к пepeзaгpузкe интepфeйca!",
 		["options_savedvariables"]               = "Нacтpoйки coxpaнeния",
 		["options_savedvariables_tooltip"]       = "Coxpaнять oбщиe нacтpoйки для вcex пepcoнaжeй aккaунтa или oтдeльныe для кaждoгo пepcoнaжa",
@@ -385,6 +346,7 @@ FCOLP.localizationVars.localizationAll = {
 		["chatcommands_deepdebug_on"]            = "Глубокая отладка: Вкл.",
 		["chatcommands_deepdebug_off"]           = "Глубокая отладка: Выкл.",
 	},
+	--==============================================================================
 	--Chinese
 	[8] = {
 		-- Options menu
@@ -402,6 +364,7 @@ FCOLP.localizationVars.localizationAll = {
 		["options_language_dropdown_selection6"] = "日语",
 		["options_language_dropdown_selection7"] = "俄语",
 		["options_language_dropdown_selection8"] = "中文",
+		["options_language_dropdown_selection9"] = "烏克蘭",
 		["options_language_description1"]		 = "注意：更改语言/保存选项将重新加载用户界面！",
         ["options_savedvariables"]				 = "保存设置",
         ["options_savedvariables_tooltip"]       = "为玩家账户中的所有角色保存此插件设置，或是为每个角色分别保存各自设置",
@@ -438,13 +401,162 @@ FCOLP.localizationVars.localizationAll = {
         ["chatcommands_deepdebug_on"]			 = "深度调试：开",
         ["chatcommands_deepdebug_off"]			 = "深度调试：开",
     },
+
+
+	--==================================================================================================================
+	-- Custom languages
+	--==================================================================================================================
+	--Italian
+	[5] = {
+		-- Options menu
+		["options_description"] 				 		 = "FCO Lockpicker shows the lockpicks you got left during opening of a chest in different colors",
+		["options_header1"] 							 = "General",
+		["options_language"]							 = "Idioma",
+		["options_language_tooltip"]					 = "Elegir idioma",
+		["options_language_use_client"] 		 		 = "Utilizzare la lingua del client",
+		["options_language_use_client_tooltip"]  		 = "Lasciate sempre l'addon usare il linguaggio del client di gioco.",
+		["options_language_dropdown_selection1"] = "Inglese",
+		["options_language_dropdown_selection2"] = "Germano",
+		["options_language_dropdown_selection3"] = "Francese",
+		["options_language_dropdown_selection4"] = "Spagnolo",
+		["options_language_dropdown_selection5"] = "Italiano",
+		["options_language_dropdown_selection6"]  = "Giapponese",
+		["options_language_dropdown_selection7"] = "Russo",
+		["options_language_dropdown_selection8"] 		 = "Cinese",
+		["options_language_dropdown_selection9"] 		 = "Ucraino",
+		["options_language_description1"]				 = "CUIDADO: Modificar uno de esos parámetros recargará la interfaz",
+		["options_savedvariables"]						 = "Guardar",
+		["options_savedvariables_tooltip"] 				 = "Guardar los parámetros del addon para toda la cuenta o individualmente para cada personaje",
+		["options_savedVariables_dropdown_selection1"]	 = "Individualmente",
+		["options_savedVariables_dropdown_selection2"]	 = "Cuenta",
+		--Colors & values
+		["options_header_color"]				 = "Colors",
+		["options_normal_color"] 				 = "Normal color",
+		["options_normal_color_tooltip"] 		 = "The color of the lockpicks left text if you got enough lockpicks left",
+		["options_normal_value"] 				 = "Normal threshold value",
+		["options_normal_value_tooltip"] 		 = "How many lockpicks do you need at least for 'normal' color?",
+		["options_medium_color"] 				 = "Medium color",
+		["options_medium_color_tooltip"] 		 = "The color of the lockpicks left text if you got some lockpicks left",
+		["options_medium_value"] 				 = "Medium threshold value",
+		["options_medium_value_tooltip"] 		 = "How many lockpicks do you need at least for 'medium' color?",
+		["options_low_color"] 					 = "Low color",
+		["options_low_color_tooltip"] 			 = "The color of the lockpicks left text if you got only a few lockpicks left",
+		["options_low_value"] 					 = "Low threshold value",
+		["options_low_value_tooltip"] 			 = "How many lockpicks do you need at least for 'low' color?",
+		["options_header_chamber_resolved"] 	 = "Chamber resolved",
+		["options_show_chamber_resolved_icon"]	 = "Show chamber resolved icon",
+		["options_show_chamber_resolved_icon_tooltip"]	 = "Show an icon if the actual lock's chamber has been resolved",
+		["options_show_chamber_resolved_green_springs"]	= "Show green springs",
+		["options_show_chamber_resolved_green_springs_tooltip"] = "Colorize the srping of the lock green if the chamber is resolved.",
+		--Chat commands
+		["chatcommands_info"]	 				 = "|c00FF00FCO|cFFFF00Lockpicker|cFFFFFF",
+		["chatcommands_help"]	 				 = "|cFFFFFF'help' / 'list'|cFFFF00: Muestra esta información acerca del addon",
+		["chatcommands_debug"]					 = "|cFFFFFF'debug'|cFFFF00: Activar/Desactivar los mensajes de debug. [Advertencia] ¡Esto llenará la ventana de chat!",
+		["chatcommands_debug_on"]				 = "Debug: ON",
+		["chatcommands_debug_off"]				 = "Debug: OFF",
+		["chatcommands_deepdebug_on"]			 = "Deep debug: ON",
+		["chatcommands_deepdebug_off"]			 = "Deep debug: OFF",
+	},
+	--==============================================================================
+	[9] = { --Ukrainian
+		-- Options menu
+		["options_description"]                  = "FCO Lockpicker показує різними кольорами кількість відмичок, що залишились, під час відкриття скрині, а також додає візуальні підказки для процесу злому замків.",
+		["options_header1"]                      = "Загальні налаштування",
+		["options_language"]                     = "Мова",
+		["options_language_tooltip"]             = "Виберіть мову",
+		["options_language_use_client"]          = "Використовувати мову клієнта",
+		["options_language_use_client_tooltip"]  = "Завжди використовувати аддоном мову ігрового клієнта.",
+		["options_language_dropdown_selection1"] = "Англійська",
+		["options_language_dropdown_selection2"] = "Німецька",
+		["options_language_dropdown_selection3"] = "Французька",
+		["options_language_dropdown_selection4"] = "Іспанська",
+		["options_language_dropdown_selection5"] = "Італійська",
+		["options_language_dropdown_selection6"] = "Японська",
+		["options_language_dropdown_selection7"] = "Російська",
+		["options_language_dropdown_selection8"] = "Китайська",
+		["options_language_dropdown_selection9"] = "Українська",
+		["options_language_description1"]        = "УВАГА: Зміна мови/налаштування збереження перезавантажить інтерфейс користувача!",
+		["options_savedvariables"]               = "Збереження налаштувань",
+		["options_savedvariables_tooltip"]       = "Зберігати налаштування аддону для всіх персонажів акаунта, або окремо для кожного персонажа",
+		["options_savedVariables_dropdown_selection1"] = "Для кожного персонажа",
+		["options_savedVariables_dropdown_selection2"] = "На весь акаунт",
+
+		-- Colors & values
+		["options_header_color"]                 = "Кольори",
+		["options_normal_color"]                 = "Нормальний колір",
+		["options_normal_color_tooltip"]         = "Колір тексту \"залишилось відмичок\", якщо відмичок достатньо",
+		["options_normal_value"]                 = "Поріг для нормального кольору",
+		["options_normal_value_tooltip"]         = "Скільки щонайменше потрібно відмичок для \"нормального\" кольору?",
+		["options_medium_color"]                 = "Середній колір",
+		["options_medium_color_tooltip"]         = "Колір тексту \"залишилось відмичок\", якщо відмичок залишилось трохи",
+		["options_medium_value"]                 = "Поріг для середнього кольору",
+		["options_medium_value_tooltip"]         = "Скільки щонайменше потрібно відмичок для \"середнього\" кольору?",
+		["options_low_color"]                    = "Низький колір",
+		["options_low_color_tooltip"]            = "Колір тексту \"залишилось відмичок\", якщо відмичок залишилось дуже мало",
+		["options_low_value"]                    = "Поріг для низького кольору",
+		["options_low_value_tooltip"]            = "Скільки щонайменше потрібно відмичок для \"низького\" кольору?",
+
+		["options_header_chamber_resolved"]      = "Розв'язана камера",
+		["options_show_chamber_resolved_icon"]   = "Показувати іконку розв'язаної камери",
+		["options_show_chamber_resolved_icon_tooltip"] = "Показати іконку, якщо поточну камеру замка розв'язано",
+		["options_show_chamber_resolved_green_springs"] = "Розфарбовувати пружини камери",
+		["options_show_chamber_resolved_green_springs_tooltip"] = "Розфарбувати пружини замка, якщо камеру розв'язано.",
+		["options_show_chamber_resolved_green_springs_color"] = "Колір пружин",
+		["options_show_chamber_resolved_green_springs_color_tooltip"] = "Виберіть колір розв'язаних пружин",
+
+		["options_header_chamber"]               = "Звук камери",
+		["options_chamber_stressed_sound"]       = "Звук \"камера напружена\"",
+		["options_chamber_stressed_sound_tooltip"] = "Виберіть звук, який відтворюється, коли камера напружена. Звук за замовчуванням - індекс 2 \'LOCKPICKING_CHAMBER_STRESS\', індекс 1 означає: не відтворювати звук.\n\nПересуньте повзунок, щоб прослухати обраний звук.",
+		["options_show_chamber_resolved_icon_color"] = "Колір текстури розв'язаної камери",
+		["options_show_chamber_resolved_icon_color_tooltip"] = "Виберіть колір текстури розв'язаної камери",
+		["options_chamber_resolved_icon"]        = "Текстура розв'язаної камери",
+
+		-- Chat commands
+		["chatcommands_info"]                    = "|c00FF00FCO|cFFFF00Lockpicker|cFFFFFF",
+		["chatcommands_help"]                    = "|cFFFFFF'help' / 'list'|cFFFF00: Показує цю інформацію про аддон",
+		["chatcommands_debug"]                   = "|cFFFFFF'debug'|cFFFF00: Увімкнути/вимкнути налагоджувальні повідомлення. |c990000[Увага]|cFFFF00 Це завалить ваш локальний чат повідомленнями!",
+		["chatcommands_debug_on"]                = "Налагодження: УВІМК",
+		["chatcommands_debug_off"]               = "Налагодження: ВИМК",
+		["chatcommands_deepdebug_on"]            = "Глибоке налагодження: УВІМК",
+		["chatcommands_deepdebug_off"]           = "Глибоке налагодження: ВИМК",
+	},
 }
---Meta table trick to use english localization for german and french values, which are missing
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+
+--Meta table trick to use English localization for German, French, ... missing values
 local fco_lockpickerloc = FCOLP.localizationVars.localizationAll
-setmetatable(fco_lockpickerloc[2], {__index = fco_lockpickerloc[1]})
-setmetatable(fco_lockpickerloc[3], {__index = fco_lockpickerloc[1]})
-setmetatable(fco_lockpickerloc[4], {__index = fco_lockpickerloc[1]})
-setmetatable(fco_lockpickerloc[5], {__index = fco_lockpickerloc[1]})
-setmetatable(fco_lockpickerloc[6], {__index = fco_lockpickerloc[1]})
-setmetatable(fco_lockpickerloc[7], {__index = fco_lockpickerloc[1]})
-setmetatable(fco_lockpickerloc[8], {__index = fco_lockpickerloc[1]})
+local baseStringsIndexToReference = 1 --English
+for idx, stringsTab in ipairs(fco_lockpickerloc) do
+	if idx ~= baseStringsIndexToReference then
+		setmetatable(fco_lockpickerloc[idx], {__index = fco_lockpickerloc[baseStringsIndexToReference]})
+	end
+end
+------------------------------------------------------------------------------------------------------------------------
+
+local langVars = FCOLP.langVars
+
+--Set the number of languages
+local languageCount = #fco_lockpickerloc
+FCOLP.numVars.languageCount = languageCount
+
+--Lookup table for the language string of clientLang -> to language index in table FCOLP.localizationVars.localizationAll
+langVars.langToLanguageIndex = {
+	--ESO supported official languages
+	["de"]  = 2,
+	["en"]  = 1,
+	["es"]  = 4,
+	["fr"]  = 3,
+	["jp"]  = 6,
+	["ru"]  = 7,
+	["zh"]  = 8,
+	--Custom languages
+	["it"]  = 5,
+	["ua"]  = 9,
+}
+
+--Lookup table for the language index to [true] "supported" check
+for languageIndex = 1, languageCount do
+	langVars.languages[languageIndex] = true
+end

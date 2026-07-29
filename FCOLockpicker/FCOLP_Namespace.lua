@@ -11,7 +11,7 @@ FCOLP.addonVars.gAddonName                 = "FCOLockpicker"
 FCOLP.addonVars.addonNameMenu              = "FCO Lockpicker"
 FCOLP.addonVars.addonNameMenuDisplay       = "|c00FF00FCO |cFFFF00Lockpicker|r"
 FCOLP.addonVars.addonAuthor                = '|cFFFF00Baertram|r'
-FCOLP.addonVars.addonVersionOptions        = '0.31'
+FCOLP.addonVars.addonVersionOptions        = '0.32'
 FCOLP.addonVars.addonSavedVariablesName    = "FCOLockpicker_Settings"
 FCOLP.addonVars.addonSavedVariablesVersion = 0.01
 FCOLP.addonVars.gAddonLoaded               = false
@@ -339,12 +339,10 @@ FCOLP.preventerVars.gLockpickActive = false
 FCOLP.preventerVars.gOnLockpickChatStateWasMinimized = false
 
 FCOLP.numVars = {}
-FCOLP.numVars.languageCount = 8
+FCOLP.numVars.languageCount = 0 		--Will be filled in FCOLockpickerLoc.lua
 FCOLP.langVars = {}
-FCOLP.langVars.languages = {}
-for languageIndex = 1, FCOLP.numVars.languageCount do
-    FCOLP.langVars.languages[languageIndex] = true
-end
+FCOLP.langVars.languages = {} 			--Will be filled in FCOLockpickerLoc.lua
+FCOLP.langVars.langToLanguageIndex = {} --Will be filled in FCOLockpickerLoc.lua
 
 FCOLP.localizationVars = {}
 FCOLP.localizationVars.FCOLP_loc = {}
